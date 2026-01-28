@@ -5,16 +5,16 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { useAppContext } from "@/lib/AppContext";
 import { callCounsellor } from "@/lib/api";
-import type { University } from "@/lib/types";
 import Link from "next/link";
 
 export default function CounsellorPage() {
     const router = useRouter();
-    const { userProfile, currentStage, counsellorResponse, setCounsellorResponse } = useAppContext();
+    const { userProfile, currentStage } = useAppContext();
 
     const [question, setQuestion] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [aiResponse, setAiResponse] = useState<any>(null);
 
     useEffect(() => {
         if (!userProfile) {
@@ -34,30 +34,28 @@ export default function CounsellorPage() {
         setError(null);
 
         try {
-            const response = await callCounsellor({
-                user_profile: userProfile,
+            const payload = {
+                user_profile: {
+                    name: userProfile.name,
+                    email: userProfile.email,
+                    academic_score: userProfile.academic_score,
+                    budget: userProfile.budget,
+                    preferred_country: userProfile.preferred_country,
+                },
                 current_stage: currentStage,
                 shortlisted_universities: [],
                 locked_university: null,
-            });
+            };
 
-            setCounsellorResponse(response);
+            const response = await callCounsellor(payload);
+            setAiResponse(response);
             setQuestion("");
         } catch (err) {
-            setError(err instanceof Error ? err.message : "Failed to get response from counsellor");
+            setError("Something went wrong. Try again.");
         } finally {
             setIsLoading(false);
         }
     };
-
-    const groupedRecommendations = counsellorResponse?.recommendations?.reduce(
-        (acc, uni) => {
-            if (!acc[uni.category]) acc[uni.category] = [];
-            acc[uni.category].push(uni);
-            return acc;
-        },
-        {} as Record<string, University[]>
-    );
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-stone-50 via-amber-50/30 to-stone-100 text-stone-900">
@@ -119,7 +117,7 @@ export default function CounsellorPage() {
                                     disabled={isLoading || !question.trim()}
                                     whileHover={{ y: -2 }}
                                     transition={{ duration: 0.2 }}
-                                    className="self-end px-8 py-3 text-base font-medium bg-stone-900 text-white rounded-full hover:bg-stone-800 transition-all duration-300 hover:shadow-lg hover:shadow-stone-900/25 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:y-0"
+                                    className="self-end px-8 py-3 text-base font-medium bg-stone-900 text-white rounded-full hover:bg-stone-800 transition-all duration-300 hover:shadow-lg hover:shadow-stone-900/25 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     {isLoading ? "Thinking..." : "Ask Counsellor"}
                                 </motion.button>
@@ -146,7 +144,7 @@ export default function CounsellorPage() {
                         )}
 
                         {/* Response Section */}
-                        {counsellorResponse && (
+                        {aiResponse && (
                             <motion.div
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
@@ -154,84 +152,62 @@ export default function CounsellorPage() {
                                 className="space-y-8"
                             >
                                 {/* AI Message */}
-                                <div className="bg-white/60 backdrop-blur-sm border border-stone-200/50 rounded-2xl p-8 shadow-lg shadow-stone-200/50">
-                                    <div className="flex items-start gap-4 mb-4">
-                                        <div className="w-10 h-10 rounded-full bg-stone-900 flex items-center justify-center flex-shrink-0">
-                                            <span className="text-white text-sm font-semibold">AI</span>
-                                        </div>
-                                        <div>
-                                            <h3 className="text-lg font-semibold text-stone-900 mb-2">Counsellor Response</h3>
-                                            <p className="text-stone-700 leading-relaxed whitespace-pre-wrap">
-                                                {counsellorResponse.message}
-                                            </p>
+                                {aiResponse?.message && (
+                                    <div className="bg-white/60 backdrop-blur-sm border border-stone-200/50 rounded-2xl p-8 shadow-lg shadow-stone-200/50">
+                                        <div className="flex items-start gap-4 mb-4">
+                                            <div className="w-10 h-10 rounded-full bg-stone-900 flex items-center justify-center flex-shrink-0">
+                                                <span className="text-white text-sm font-semibold">AI</span>
+                                            </div>
+                                            <div>
+                                                <h3 className="text-lg font-semibold text-stone-900 mb-2">
+                                                    Counsellor Response
+                                                </h3>
+                                                <p className="text-stone-700 leading-relaxed whitespace-pre-wrap">
+                                                    {aiResponse.message}
+                                                </p>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                )}
 
                                 {/* University Recommendations */}
-                                {counsellorResponse.recommendations && counsellorResponse.recommendations.length > 0 && (
+                                {aiResponse?.recommendations && aiResponse.recommendations.length > 0 && (
                                     <div>
                                         <h2 className="text-2xl font-semibold text-stone-900 mb-6">
                                             University Recommendations
                                         </h2>
-                                        <div className="space-y-6">
-                                            {["Dream", "Target", "Safe"].map((category) => {
-                                                const universities = groupedRecommendations?.[category];
-                                                if (!universities || universities.length === 0) return null;
-
-                                                const categoryColors = {
-                                                    Dream: "bg-violet-100 border-violet-200 text-violet-900",
-                                                    Target: "bg-blue-100 border-blue-200 text-blue-900",
-                                                    Safe: "bg-emerald-100 border-emerald-200 text-emerald-900",
-                                                };
-
-                                                return (
-                                                    <div key={category}>
-                                                        <div className="flex items-center gap-3 mb-4">
-                                                            <span
-                                                                className={`px-3 py-1 rounded-full text-xs font-semibold ${categoryColors[category as keyof typeof categoryColors]}`}
-                                                            >
-                                                                {category}
-                                                            </span>
-                                                            <span className="text-sm text-stone-500">
-                                                                {universities.length} {universities.length === 1 ? "university" : "universities"}
-                                                            </span>
-                                                        </div>
-                                                        <div className="grid gap-4">
-                                                            {universities.map((uni, idx) => (
-                                                                <motion.div
-                                                                    key={idx}
-                                                                    initial={{ opacity: 0, y: 20 }}
-                                                                    animate={{ opacity: 1, y: 0 }}
-                                                                    transition={{ duration: 0.4, delay: idx * 0.1 }}
-                                                                    className="bg-white/60 backdrop-blur-sm border border-stone-200/50 rounded-xl p-6 hover:bg-white/80 hover:border-stone-300/50 transition-all duration-300 hover:shadow-lg hover:shadow-stone-200/50"
-                                                                >
-                                                                    <div className="flex justify-between items-start mb-3">
-                                                                        <h3 className="text-lg font-semibold text-stone-900">{uni.name}</h3>
-                                                                        {uni.acceptance_probability && (
-                                                                            <span className="text-sm font-medium text-stone-600">
-                                                                                {Math.round(uni.acceptance_probability * 100)}% match
-                                                                            </span>
-                                                                        )}
-                                                                    </div>
-                                                                    <div className="flex flex-wrap gap-4 text-sm text-stone-600">
-                                                                        <div className="flex items-center gap-2">
-                                                                            <span className="font-medium">Country:</span>
-                                                                            <span>{uni.country}</span>
-                                                                        </div>
-                                                                        {uni.tuition_fee && (
-                                                                            <div className="flex items-center gap-2">
-                                                                                <span className="font-medium">Tuition:</span>
-                                                                                <span>${uni.tuition_fee.toLocaleString()}/year</span>
-                                                                            </div>
-                                                                        )}
-                                                                    </div>
-                                                                </motion.div>
-                                                            ))}
-                                                        </div>
+                                        <div className="space-y-4">
+                                            {aiResponse.recommendations.map((rec: any, idx: number) => (
+                                                <motion.div
+                                                    key={idx}
+                                                    initial={{ opacity: 0, y: 20 }}
+                                                    animate={{ opacity: 1, y: 0 }}
+                                                    transition={{ duration: 0.4, delay: idx * 0.1 }}
+                                                    className="bg-white/60 backdrop-blur-sm border border-stone-200/50 rounded-xl p-6 hover:bg-white/80 hover:border-stone-300/50 transition-all duration-300 hover:shadow-lg hover:shadow-stone-200/50"
+                                                >
+                                                    <div className="flex justify-between items-start mb-3">
+                                                        <h3 className="text-lg font-semibold text-stone-900">
+                                                            {rec.university}
+                                                        </h3>
+                                                        <span
+                                                            className={`px-3 py-1 rounded-full text-xs font-semibold ${rec.category === "Dream"
+                                                                    ? "bg-violet-100 border border-violet-200 text-violet-900"
+                                                                    : rec.category === "Target"
+                                                                        ? "bg-blue-100 border border-blue-200 text-blue-900"
+                                                                        : "bg-emerald-100 border border-emerald-200 text-emerald-900"
+                                                                }`}
+                                                        >
+                                                            {rec.category}
+                                                        </span>
                                                     </div>
-                                                );
-                                            })}
+                                                    {rec.reason && (
+                                                        <p className="text-stone-700 mb-2 leading-relaxed">{rec.reason}</p>
+                                                    )}
+                                                    {rec.risk && (
+                                                        <p className="text-sm text-stone-600 italic">Risk: {rec.risk}</p>
+                                                    )}
+                                                </motion.div>
+                                            ))}
                                         </div>
                                     </div>
                                 )}
@@ -239,7 +215,7 @@ export default function CounsellorPage() {
                         )}
 
                         {/* Empty State */}
-                        {!counsellorResponse && !isLoading && (
+                        {!aiResponse && !isLoading && (
                             <motion.div
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}

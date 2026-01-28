@@ -88,15 +88,9 @@ export default function Home() {
           </div>
 
           <div className="flex items-center gap-4">
-            <Link
-              href="/login"
-              className="hidden md:block text-sm font-medium text-stone-700 hover:text-stone-900 transition-colors duration-200"
-            >
-              Sign in
-            </Link>
             <motion.div whileHover={{ y: -2 }} transition={{ duration: 0.2 }}>
               <Link
-                href="/start"
+                href="/onboarding"
                 className="px-5 py-2.5 text-sm font-medium bg-stone-900 text-white rounded-full hover:bg-stone-800 transition-all duration-300 hover:shadow-lg hover:shadow-stone-900/20"
               >
                 Get Started
@@ -147,7 +141,7 @@ export default function Home() {
             >
               <motion.div whileHover={{ y: -2 }} transition={{ duration: 0.2 }}>
                 <Link
-                  href="/start"
+                  href="/onboarding"
                   className="inline-flex items-center justify-center px-8 py-4 text-base font-medium bg-stone-900 text-white rounded-full hover:bg-stone-800 transition-all duration-300 hover:shadow-xl hover:shadow-stone-900/25"
                 >
                   Get Started
@@ -364,7 +358,7 @@ export default function Home() {
             </p>
             <motion.div whileHover={{ y: -2 }} transition={{ duration: 0.2 }}>
               <Link
-                href="/start"
+                href="/onboarding"
                 className="inline-flex items-center justify-center px-8 py-4 text-base font-medium bg-stone-900 text-white rounded-full hover:bg-stone-800 transition-all duration-300 hover:shadow-xl hover:shadow-stone-900/25"
               >
                 Get Started Now

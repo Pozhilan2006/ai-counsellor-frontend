@@ -99,16 +99,19 @@ export default function EnhancedOnboardingPage() {
         };
 
         try {
-            // Submit to backend
-            await submitOnboarding(profile);
+            console.log("Onboarding: Submitting profile", { email: profile.email, preferred_countries: profile.preferred_countries });
+            // Submit to backend with final_submit = true
+            await submitOnboarding(profile, true);
 
             // Update local context
             setUserProfile(profile);
             setCurrentStage("DISCOVERY");
             router.push("/dashboard");
         } catch (error) {
-            console.error("Onboarding submission failed:", error);
-            alert("Failed to save profile. Please try again.");
+            // Display backend error message verbatim
+            const errorMessage = error instanceof Error ? error.message : "Failed to save profile. Please try again.";
+            console.error("Onboarding submission failed:", errorMessage);
+            alert(errorMessage);
         }
     };
 

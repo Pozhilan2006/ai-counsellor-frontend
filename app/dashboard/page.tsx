@@ -29,6 +29,13 @@ export default function DashboardPage() {
 
         // Auto-fetch universities on dashboard load
         const fetchRecommendations = async () => {
+            // CRITICAL GUARD: Only fetch if profile is complete
+            if (!userProfile.profile_complete) {
+                console.log("Dashboard: Profile incomplete, skipping recommendations fetch");
+                setError("Please complete your onboarding to see university recommendations.");
+                return;
+            }
+
             // Skip if we already have recommendations
             if (recommendations.length > 0) {
                 console.log("Using cached recommendations:", recommendations);
@@ -55,8 +62,10 @@ export default function DashboardPage() {
                 }
 
             } catch (err) {
-                console.error("Dashboard: Failed to fetch recommendations:", err);
-                setError("Failed to load university recommendations. Please refresh to try again.");
+                // Display backend error message verbatim
+                const errorMessage = err instanceof Error ? err.message : "Failed to load university recommendations. Please refresh to try again.";
+                console.error("Dashboard: Failed to fetch recommendations:", errorMessage);
+                setError(errorMessage);
             } finally {
                 setIsLoading(false);
             }

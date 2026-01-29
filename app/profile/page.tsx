@@ -74,18 +74,9 @@ export default function ProfilePage() {
         setIsRecalculating(true);
 
         try {
-            const payload = {
-                user_profile: {
-                    name: profile.name,
-                    email: profile.email,
-                    gpa: profile.gpa,
-                    budget_per_year: profile.budget_per_year,
-                    preferred_countries: profile.preferred_countries,
-                },
-                query: "Based on my updated profile, please recommend universities that match my criteria.",
-            };
-
-            const response = await callCounsellor(payload);
+            const message = "Based on my updated profile, please recommend universities that match my criteria.";
+            console.log("Profile: Recalculating recommendations", { email: profile.email });
+            const response = await callCounsellor(profile.email, message);
 
             if (response.universities && response.universities.length > 0) {
                 setRecommendations(response.universities);
@@ -93,8 +84,10 @@ export default function ProfilePage() {
                 router.push("/dashboard");
             }
         } catch (error) {
-            console.error("Error recalculating recommendations:", error);
-            alert("Failed to recalculate recommendations. Please try again.");
+            // Display backend error message verbatim
+            const errorMessage = error instanceof Error ? error.message : "Failed to recalculate recommendations. Please try again.";
+            console.error("Error recalculating recommendations:", errorMessage);
+            alert(errorMessage);
         } finally {
             setIsRecalculating(false);
         }
@@ -258,8 +251,8 @@ export default function ProfilePage() {
                                                             type="button"
                                                             onClick={() => handleMultiSelect(country)}
                                                             className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${formData.preferred_countries?.includes(country)
-                                                                    ? "bg-blue-600 text-white"
-                                                                    : "bg-stone-100 text-stone-700 hover:bg-stone-200"
+                                                                ? "bg-blue-600 text-white"
+                                                                : "bg-stone-100 text-stone-700 hover:bg-stone-200"
                                                                 }`}
                                                         >
                                                             {country}

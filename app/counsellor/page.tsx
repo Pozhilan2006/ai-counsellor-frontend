@@ -34,22 +34,9 @@ export default function CounsellorPage() {
         setError(null);
 
         try {
-            const payload = {
-                user_profile: {
-                    name: userProfile.name,
-                    email: userProfile.email,
-                    academic_score: userProfile.gpa || 0,
-                    budget: userProfile.budget_per_year || 0,
-                    preferred_country: userProfile.preferred_countries?.[0] || "Any",
-                },
-                current_stage: currentStage,
-                shortlisted_universities: [], // specific requirement as per prompt
-                locked_university: null,      // specific requirement as per prompt
-                question: question,
-            };
-
-            const response = await callCounsellor(payload);
-            console.log("Counsellor: Universities received:", response.recommendations);
+            console.log("Counsellor: Sending message", { email: userProfile.email, message: question });
+            const response = await callCounsellor(userProfile.email, question);
+            console.log("Counsellor: Response received:", response);
             setAiResponse(response);
 
             // Update global recommendations if new ones are returned
@@ -59,7 +46,10 @@ export default function CounsellorPage() {
 
             setQuestion("");
         } catch (err) {
-            setError("Something went wrong. Try again.");
+            // Display backend error message verbatim
+            const errorMessage = err instanceof Error ? err.message : "Something went wrong. Try again.";
+            console.error("Counsellor error:", errorMessage);
+            setError(errorMessage);
         } finally {
             setIsLoading(false);
         }

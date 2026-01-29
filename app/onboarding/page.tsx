@@ -1,33 +1,99 @@
 "use client";
 
-import { useState, FormEvent } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useAppContext } from "@/lib/AppContext";
-import Link from "next/link";
+import type { UserProfile } from "@/lib/types";
 
-export default function OnboardingPage() {
+export default function EnhancedOnboardingPage() {
     const router = useRouter();
     const { setUserProfile, setCurrentStage } = useAppContext();
+    const [currentStep, setCurrentStep] = useState(1);
+    const totalSteps = 4;
 
-    const [formData, setFormData] = useState({
+    // Form state
+    const [formData, setFormData] = useState<Partial<UserProfile>>({
         name: "",
         email: "",
-        academic_score: "",
-        budget: "",
-        preferred_country: "",
+        // Academic Background
+        education_level: undefined,
+        degree: "",
+        major: "",
+        graduation_year: undefined,
+        gpa: undefined,
+        // Study Goals
+        intended_degree: "",
+        field_of_study: "",
+        target_intake_year: undefined,
+        preferred_countries: [],
+        // Budget
+        budget_per_year: 0,
+        funding_plan: undefined,
+        // Exams & Readiness
+        ielts_status: undefined,
+        ielts_score: undefined,
+        gre_status: undefined,
+        gre_score: undefined,
+        sop_status: undefined,
     });
 
-    const handleSubmit = (e: FormEvent) => {
-        e.preventDefault();
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const { name, value, type } = e.target;
+        setFormData({
+            ...formData,
+            [name]: type === "number" ? parseFloat(value) : value,
+        });
+    };
 
-        const profile = {
-            name: formData.name,
-            email: formData.email,
-            gpa: parseFloat(formData.academic_score),
-            budget_per_year: parseFloat(formData.budget),
-            preferred_countries: [formData.preferred_country], // Array for future multi-select
-            profile_complete: true, // Mark profile as complete
+    const handleMultiSelect = (country: string) => {
+        const current = formData.preferred_countries || [];
+        if (current.includes(country)) {
+            setFormData({
+                ...formData,
+                preferred_countries: current.filter((c) => c !== country),
+            });
+        } else {
+            setFormData({
+                ...formData,
+                preferred_countries: [...current, country],
+            });
+        }
+    };
+
+    const handleNext = () => {
+        if (currentStep < totalSteps) {
+            setCurrentStep(currentStep + 1);
+        }
+    };
+
+    const handleBack = () => {
+        if (currentStep > 1) {
+            setCurrentStep(currentStep - 1);
+        }
+    };
+
+    const handleSubmit = () => {
+        const profile: UserProfile = {
+            name: formData.name || "",
+            email: formData.email || "",
+            education_level: formData.education_level,
+            degree: formData.degree,
+            major: formData.major,
+            graduation_year: formData.graduation_year,
+            gpa: formData.gpa,
+            intended_degree: formData.intended_degree,
+            field_of_study: formData.field_of_study,
+            target_intake_year: formData.target_intake_year,
+            preferred_countries: formData.preferred_countries || [],
+            budget_per_year: formData.budget_per_year || 0,
+            funding_plan: formData.funding_plan,
+            ielts_status: formData.ielts_status,
+            ielts_score: formData.ielts_score,
+            gre_status: formData.gre_status,
+            gre_score: formData.gre_score,
+            sop_status: formData.sop_status,
+            profile_complete: true,
         };
 
         setUserProfile(profile);
@@ -35,152 +101,391 @@ export default function OnboardingPage() {
         router.push("/dashboard");
     };
 
+    const countries = ["USA", "UK", "Canada", "Australia", "Germany", "France", "Netherlands", "Singapore"];
+
     return (
-        <div className="min-h-screen bg-gradient-to-br from-stone-50 via-amber-50/30 to-stone-100 text-stone-900">
-            {/* Navigation */}
-            <nav className="fixed top-0 w-full z-50 bg-white/60 backdrop-blur-xl border-b border-stone-200/50">
-                <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-                    <Link href="/" className="text-lg font-semibold tracking-tight text-stone-900">
-                        AI Counsellor
-                    </Link>
+        <div className="min-h-screen bg-gradient-to-br from-stone-50 via-blue-50/30 to-stone-100 text-stone-900 py-12 px-6">
+            <div className="max-w-3xl mx-auto">
+                {/* Progress Indicator */}
+                <div className="mb-12">
+                    <div className="flex items-center justify-between mb-4">
+                        {[1, 2, 3, 4].map((step) => (
+                            <div key={step} className="flex items-center flex-1">
+                                <div
+                                    className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold transition-all duration-300 ${step <= currentStep
+                                            ? "bg-blue-600 text-white"
+                                            : "bg-stone-200 text-stone-500"
+                                        }`}
+                                >
+                                    {step}
+                                </div>
+                                {step < 4 && (
+                                    <div
+                                        className={`flex-1 h-1 mx-2 rounded transition-all duration-300 ${step < currentStep ? "bg-blue-600" : "bg-stone-200"
+                                            }`}
+                                    ></div>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                    <div className="text-sm text-stone-600 text-center">
+                        Step {currentStep} of {totalSteps}
+                    </div>
                 </div>
-            </nav>
 
-            <main className="pt-32 pb-20 px-6">
-                <div className="max-w-2xl mx-auto">
+                {/* Form Steps */}
+                <AnimatePresence mode="wait">
                     <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                        key={currentStep}
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -20 }}
+                        transition={{ duration: 0.3 }}
+                        className="bg-white/60 backdrop-blur-sm border border-stone-200/50 rounded-2xl p-8 shadow-xl shadow-stone-200/50"
                     >
-                        {/* Header */}
-                        <div className="mb-12 text-center">
-                            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/80 backdrop-blur-sm border border-stone-200/80 text-xs font-medium text-stone-600 mb-6 shadow-sm">
-                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                                Step 1 of 3
+                        {/* Step 1: Personal & Academic Background */}
+                        {currentStep === 1 && (
+                            <div>
+                                <h2 className="text-2xl font-semibold text-stone-900 mb-6">
+                                    Personal & Academic Background
+                                </h2>
+                                <div className="space-y-5">
+                                    <div>
+                                        <label className="block text-sm font-medium text-stone-700 mb-2">
+                                            Full Name *
+                                        </label>
+                                        <input
+                                            type="text"
+                                            name="name"
+                                            value={formData.name}
+                                            onChange={handleChange}
+                                            className="w-full px-4 py-3 bg-white border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            required
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-stone-700 mb-2">
+                                            Email *
+                                        </label>
+                                        <input
+                                            type="email"
+                                            name="email"
+                                            value={formData.email}
+                                            onChange={handleChange}
+                                            className="w-full px-4 py-3 bg-white border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            required
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-stone-700 mb-2">
+                                            Current Education Level
+                                        </label>
+                                        <select
+                                            name="education_level"
+                                            value={formData.education_level || ""}
+                                            onChange={handleChange}
+                                            className="w-full px-4 py-3 bg-white border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        >
+                                            <option value="">Select...</option>
+                                            <option value="Undergraduate">Undergraduate</option>
+                                            <option value="Graduate">Graduate</option>
+                                            <option value="Postgraduate">Postgraduate</option>
+                                        </select>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-stone-700 mb-2">
+                                                Degree
+                                            </label>
+                                            <input
+                                                type="text"
+                                                name="degree"
+                                                value={formData.degree}
+                                                onChange={handleChange}
+                                                className="w-full px-4 py-3 bg-white border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                placeholder="e.g., B.Tech"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-stone-700 mb-2">
+                                                Major
+                                            </label>
+                                            <input
+                                                type="text"
+                                                name="major"
+                                                value={formData.major}
+                                                onChange={handleChange}
+                                                className="w-full px-4 py-3 bg-white border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                placeholder="e.g., Computer Science"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-stone-700 mb-2">
+                                                Graduation Year
+                                            </label>
+                                            <input
+                                                type="number"
+                                                name="graduation_year"
+                                                value={formData.graduation_year || ""}
+                                                onChange={handleChange}
+                                                className="w-full px-4 py-3 bg-white border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                placeholder="2024"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-stone-700 mb-2">
+                                                GPA / Percentage
+                                            </label>
+                                            <input
+                                                type="number"
+                                                step="0.01"
+                                                name="gpa"
+                                                value={formData.gpa || ""}
+                                                onChange={handleChange}
+                                                className="w-full px-4 py-3 bg-white border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                placeholder="3.5"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <h1 className="text-4xl md:text-5xl font-semibold tracking-tight text-stone-900 mb-4">
-                                Let's get started
-                            </h1>
-                            <p className="text-lg text-stone-600">
-                                Tell us about yourself so we can provide personalized guidance.
-                            </p>
+                        )}
+
+                        {/* Step 2: Study Goals */}
+                        {currentStep === 2 && (
+                            <div>
+                                <h2 className="text-2xl font-semibold text-stone-900 mb-6">Study Goals</h2>
+                                <div className="space-y-5">
+                                    <div>
+                                        <label className="block text-sm font-medium text-stone-700 mb-2">
+                                            Intended Degree
+                                        </label>
+                                        <input
+                                            type="text"
+                                            name="intended_degree"
+                                            value={formData.intended_degree}
+                                            onChange={handleChange}
+                                            className="w-full px-4 py-3 bg-white border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            placeholder="e.g., Master's in Computer Science"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-stone-700 mb-2">
+                                            Field of Study
+                                        </label>
+                                        <input
+                                            type="text"
+                                            name="field_of_study"
+                                            value={formData.field_of_study}
+                                            onChange={handleChange}
+                                            className="w-full px-4 py-3 bg-white border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            placeholder="e.g., Artificial Intelligence"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-stone-700 mb-2">
+                                            Target Intake Year
+                                        </label>
+                                        <input
+                                            type="number"
+                                            name="target_intake_year"
+                                            value={formData.target_intake_year || ""}
+                                            onChange={handleChange}
+                                            className="w-full px-4 py-3 bg-white border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            placeholder="2025"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-stone-700 mb-3">
+                                            Preferred Countries *
+                                        </label>
+                                        <div className="grid grid-cols-2 gap-3">
+                                            {countries.map((country) => (
+                                                <button
+                                                    key={country}
+                                                    type="button"
+                                                    onClick={() => handleMultiSelect(country)}
+                                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${formData.preferred_countries?.includes(country)
+                                                            ? "bg-blue-600 text-white"
+                                                            : "bg-stone-100 text-stone-700 hover:bg-stone-200"
+                                                        }`}
+                                                >
+                                                    {country}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Step 3: Budget & Funding */}
+                        {currentStep === 3 && (
+                            <div>
+                                <h2 className="text-2xl font-semibold text-stone-900 mb-6">Budget & Funding</h2>
+                                <div className="space-y-5">
+                                    <div>
+                                        <label className="block text-sm font-medium text-stone-700 mb-2">
+                                            Budget per Year (USD) *
+                                        </label>
+                                        <input
+                                            type="number"
+                                            name="budget_per_year"
+                                            value={formData.budget_per_year || ""}
+                                            onChange={handleChange}
+                                            className="w-full px-4 py-3 bg-white border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            placeholder="50000"
+                                            required
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-stone-700 mb-2">
+                                            Funding Plan
+                                        </label>
+                                        <select
+                                            name="funding_plan"
+                                            value={formData.funding_plan || ""}
+                                            onChange={handleChange}
+                                            className="w-full px-4 py-3 bg-white border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        >
+                                            <option value="">Select...</option>
+                                            <option value="Self">Self-Funded</option>
+                                            <option value="Scholarship">Scholarship</option>
+                                            <option value="Loan">Education Loan</option>
+                                            <option value="Mixed">Mixed (Self + Scholarship/Loan)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Step 4: Exams & Readiness */}
+                        {currentStep === 4 && (
+                            <div>
+                                <h2 className="text-2xl font-semibold text-stone-900 mb-6">
+                                    Exams & Readiness
+                                </h2>
+                                <div className="space-y-5">
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-stone-700 mb-2">
+                                                IELTS Status
+                                            </label>
+                                            <select
+                                                name="ielts_status"
+                                                value={formData.ielts_status || ""}
+                                                onChange={handleChange}
+                                                className="w-full px-4 py-3 bg-white border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            >
+                                                <option value="">Select...</option>
+                                                <option value="Not Started">Not Started</option>
+                                                <option value="In Progress">In Progress</option>
+                                                <option value="Completed">Completed</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-stone-700 mb-2">
+                                                IELTS Score
+                                            </label>
+                                            <input
+                                                type="number"
+                                                step="0.5"
+                                                name="ielts_score"
+                                                value={formData.ielts_score || ""}
+                                                onChange={handleChange}
+                                                className="w-full px-4 py-3 bg-white border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                placeholder="7.5"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-stone-700 mb-2">
+                                                GRE Status
+                                            </label>
+                                            <select
+                                                name="gre_status"
+                                                value={formData.gre_status || ""}
+                                                onChange={handleChange}
+                                                className="w-full px-4 py-3 bg-white border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            >
+                                                <option value="">Select...</option>
+                                                <option value="Not Started">Not Started</option>
+                                                <option value="In Progress">In Progress</option>
+                                                <option value="Completed">Completed</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-stone-700 mb-2">
+                                                GRE Score
+                                            </label>
+                                            <input
+                                                type="number"
+                                                name="gre_score"
+                                                value={formData.gre_score || ""}
+                                                onChange={handleChange}
+                                                className="w-full px-4 py-3 bg-white border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                placeholder="320"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-stone-700 mb-2">
+                                            SOP Status
+                                        </label>
+                                        <select
+                                            name="sop_status"
+                                            value={formData.sop_status || ""}
+                                            onChange={handleChange}
+                                            className="w-full px-4 py-3 bg-white border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        >
+                                            <option value="">Select...</option>
+                                            <option value="Not Started">Not Started</option>
+                                            <option value="Draft">Draft</option>
+                                            <option value="Ready">Ready</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Navigation Buttons */}
+                        <div className="flex gap-4 mt-8">
+                            {currentStep > 1 && (
+                                <motion.button
+                                    whileHover={{ y: -2 }}
+                                    whileTap={{ scale: 0.98 }}
+                                    onClick={handleBack}
+                                    className="px-6 py-3 text-base font-medium bg-stone-100 text-stone-700 rounded-full hover:bg-stone-200 transition-all duration-300"
+                                >
+                                    Back
+                                </motion.button>
+                            )}
+                            {currentStep < totalSteps ? (
+                                <motion.button
+                                    whileHover={{ y: -2 }}
+                                    whileTap={{ scale: 0.98 }}
+                                    onClick={handleNext}
+                                    className="flex-1 px-6 py-3 text-base font-medium bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-all duration-300 shadow-lg shadow-blue-600/20"
+                                >
+                                    Next
+                                </motion.button>
+                            ) : (
+                                <motion.button
+                                    whileHover={{ y: -2 }}
+                                    whileTap={{ scale: 0.98 }}
+                                    onClick={handleSubmit}
+                                    className="flex-1 px-6 py-3 text-base font-medium bg-emerald-600 text-white rounded-full hover:bg-emerald-700 transition-all duration-300 shadow-lg shadow-emerald-600/20"
+                                >
+                                    Complete Profile
+                                </motion.button>
+                            )}
                         </div>
-
-                        {/* Form */}
-                        <motion.form
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-                            onSubmit={handleSubmit}
-                            className="bg-white/60 backdrop-blur-sm border border-stone-200/50 rounded-2xl p-8 md:p-10 shadow-lg shadow-stone-200/50"
-                        >
-                            <div className="space-y-6">
-                                {/* Name */}
-                                <div>
-                                    <label htmlFor="name" className="block text-sm font-medium text-stone-900 mb-2">
-                                        Full Name
-                                    </label>
-                                    <input
-                                        type="text"
-                                        id="name"
-                                        required
-                                        value={formData.name}
-                                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                        className="w-full px-4 py-3 rounded-lg bg-white border border-stone-200 text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent transition-all"
-                                        placeholder="John Doe"
-                                    />
-                                </div>
-
-                                {/* Email */}
-                                <div>
-                                    <label htmlFor="email" className="block text-sm font-medium text-stone-900 mb-2">
-                                        Email Address
-                                    </label>
-                                    <input
-                                        type="email"
-                                        id="email"
-                                        required
-                                        value={formData.email}
-                                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                        className="w-full px-4 py-3 rounded-lg bg-white border border-stone-200 text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent transition-all"
-                                        placeholder="john@example.com"
-                                    />
-                                </div>
-
-                                {/* Academic Score */}
-                                <div>
-                                    <label htmlFor="academic_score" className="block text-sm font-medium text-stone-900 mb-2">
-                                        Academic Score (GPA or %)
-                                    </label>
-                                    <input
-                                        type="number"
-                                        id="academic_score"
-                                        required
-                                        step="0.01"
-                                        min="0"
-                                        max="100"
-                                        value={formData.academic_score}
-                                        onChange={(e) => setFormData({ ...formData, academic_score: e.target.value })}
-                                        className="w-full px-4 py-3 rounded-lg bg-white border border-stone-200 text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent transition-all"
-                                        placeholder="3.8 or 85"
-                                    />
-                                </div>
-
-                                {/* Budget */}
-                                <div>
-                                    <label htmlFor="budget" className="block text-sm font-medium text-stone-900 mb-2">
-                                        Annual Budget (USD)
-                                    </label>
-                                    <input
-                                        type="number"
-                                        id="budget"
-                                        required
-                                        min="0"
-                                        value={formData.budget}
-                                        onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
-                                        className="w-full px-4 py-3 rounded-lg bg-white border border-stone-200 text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent transition-all"
-                                        placeholder="50000"
-                                    />
-                                </div>
-
-                                {/* Preferred Country */}
-                                <div>
-                                    <label htmlFor="preferred_country" className="block text-sm font-medium text-stone-900 mb-2">
-                                        Preferred Country
-                                    </label>
-                                    <select
-                                        id="preferred_country"
-                                        required
-                                        value={formData.preferred_country}
-                                        onChange={(e) => setFormData({ ...formData, preferred_country: e.target.value })}
-                                        className="w-full px-4 py-3 rounded-lg bg-white border border-stone-200 text-stone-900 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent transition-all"
-                                    >
-                                        <option value="">Select a country</option>
-                                        <option value="USA">United States</option>
-                                        <option value="UK">United Kingdom</option>
-                                        <option value="Canada">Canada</option>
-                                        <option value="Australia">Australia</option>
-                                        <option value="Germany">Germany</option>
-                                        <option value="Netherlands">Netherlands</option>
-                                        <option value="Singapore">Singapore</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            {/* Submit Button */}
-                            <motion.button
-                                type="submit"
-                                whileHover={{ y: -2 }}
-                                transition={{ duration: 0.2 }}
-                                className="w-full mt-8 px-8 py-4 text-base font-medium bg-stone-900 text-white rounded-full hover:bg-stone-800 transition-all duration-300 hover:shadow-xl hover:shadow-stone-900/25"
-                            >
-                                Continue to Dashboard
-                            </motion.button>
-                        </motion.form>
                     </motion.div>
-                </div>
-            </main>
+                </AnimatePresence>
+            </div>
         </div>
     );
 }

@@ -149,10 +149,10 @@ export default function Home() {
               </motion.div>
               <motion.div whileHover={{ y: -2 }} transition={{ duration: 0.2 }}>
                 <Link
-                  href="#how-it-works"
+                  href="/login"
                   className="inline-flex items-center justify-center px-8 py-4 text-base font-medium bg-white/80 backdrop-blur-sm text-stone-900 border border-stone-200 rounded-full hover:bg-white hover:border-stone-300 transition-all duration-300 hover:shadow-lg hover:shadow-stone-200/50"
                 >
-                  How it Works
+                  Login
                 </Link>
               </motion.div>
             </motion.div>

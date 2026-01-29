@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import type { UserProfile, Stage, University, TodoItem, CounsellorResponse, ProfileStrength } from "./types";
 import { canAccessStage as checkStageAccess, getNextStage } from "./types";
 
@@ -57,6 +57,7 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 // ============================================
 export function AppContextProvider({ children }: { children: ReactNode }) {
     // User Profile State
+    // User Profile State
     const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
 
     // Stage State
@@ -75,6 +76,45 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
 
     // Profile Strength State
     const [profileStrength, setProfileStrength] = useState<ProfileStrength | null>(null);
+
+    // Persistence Effect
+    useEffect(() => {
+        // Hydrate from localStorage
+        const storedProfile = localStorage.getItem("userProfile");
+        const storedStage = localStorage.getItem("currentStage");
+
+        if (storedProfile) {
+            setUserProfile(JSON.parse(storedProfile));
+        } else {
+            // Fallback to simpler auth if full profile missing
+            const simpleUser = localStorage.getItem("currentUser");
+            if (simpleUser) {
+                const parsed = JSON.parse(simpleUser);
+                setUserProfile({
+                    name: parsed.name,
+                    email: parsed.email,
+                    budget_per_year: 0,
+                    preferred_countries: [],
+                    profile_complete: false
+                } as UserProfile);
+            }
+        }
+
+        if (storedStage) {
+            setCurrentStage(storedStage as Stage);
+        }
+    }, []);
+
+    // Save on Change
+    useEffect(() => {
+        if (userProfile) {
+            localStorage.setItem("userProfile", JSON.stringify(userProfile));
+        }
+    }, [userProfile]);
+
+    useEffect(() => {
+        localStorage.setItem("currentStage", currentStage);
+    }, [currentStage]);
 
     // ============================================
     // PROFILE METHODS

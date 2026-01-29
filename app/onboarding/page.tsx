@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAppContext } from "@/lib/AppContext";
+import { submitOnboarding } from "@/lib/api";
 import type { UserProfile } from "@/lib/types";
 
 export default function EnhancedOnboardingPage() {
@@ -73,7 +74,8 @@ export default function EnhancedOnboardingPage() {
         }
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
+        // Prepare profile object
         const profile: UserProfile = {
             name: formData.name || "",
             email: formData.email || "",
@@ -96,9 +98,18 @@ export default function EnhancedOnboardingPage() {
             profile_complete: true,
         };
 
-        setUserProfile(profile);
-        setCurrentStage("DISCOVERY");
-        router.push("/dashboard");
+        try {
+            // Submit to backend
+            await submitOnboarding(profile);
+
+            // Update local context
+            setUserProfile(profile);
+            setCurrentStage("DISCOVERY");
+            router.push("/dashboard");
+        } catch (error) {
+            console.error("Onboarding submission failed:", error);
+            alert("Failed to save profile. Please try again.");
+        }
     };
 
     const countries = ["USA", "UK", "Canada", "Australia", "Germany", "France", "Netherlands", "Singapore"];
@@ -113,8 +124,8 @@ export default function EnhancedOnboardingPage() {
                             <div key={step} className="flex items-center flex-1">
                                 <div
                                     className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold transition-all duration-300 ${step <= currentStep
-                                            ? "bg-blue-600 text-white"
-                                            : "bg-stone-200 text-stone-500"
+                                        ? "bg-blue-600 text-white"
+                                        : "bg-stone-200 text-stone-500"
                                         }`}
                                 >
                                     {step}
@@ -308,8 +319,8 @@ export default function EnhancedOnboardingPage() {
                                                     type="button"
                                                     onClick={() => handleMultiSelect(country)}
                                                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${formData.preferred_countries?.includes(country)
-                                                            ? "bg-blue-600 text-white"
-                                                            : "bg-stone-100 text-stone-700 hover:bg-stone-200"
+                                                        ? "bg-blue-600 text-white"
+                                                        : "bg-stone-100 text-stone-700 hover:bg-stone-200"
                                                         }`}
                                                 >
                                                     {country}

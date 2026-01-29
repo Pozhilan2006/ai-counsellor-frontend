@@ -141,7 +141,7 @@ export default function Home() {
             >
               <motion.div whileHover={{ y: -2 }} transition={{ duration: 0.2 }}>
                 <Link
-                  href="/onboarding"
+                  href="/signup"
                   className="inline-flex items-center justify-center px-8 py-4 text-base font-medium bg-stone-900 text-white rounded-full hover:bg-stone-800 transition-all duration-300 hover:shadow-xl hover:shadow-stone-900/25"
                 >
                   Get Started

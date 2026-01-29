@@ -8,11 +8,14 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import UniversityCard from "@/components/UniversityCard";
 import LockUniversityModal from "@/components/LockUniversityModal";
+import ProfileStrengthCard from "@/components/ProfileStrengthCard";
+import TaskList from "@/components/TaskList";
+import StageIndicator from "@/components/StageIndicator";
 import type { University } from "@/lib/types";
 
 export default function DashboardPage() {
     const router = useRouter();
-    const { userProfile, currentStage, recommendations, setRecommendations, lockUniversity } = useAppContext();
+    const { userProfile, currentStage, recommendations, setRecommendations, lockUniversity, profileStrength, todoList, getTasksByStage } = useAppContext();
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [universityToLock, setUniversityToLock] = useState<University | null>(null);
@@ -163,37 +166,14 @@ export default function DashboardPage() {
                                 </div>
                             </motion.div>
 
-                            {/* Current Stage Card */}
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.6, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-                                className="bg-white/60 backdrop-blur-sm border border-stone-200/50 rounded-2xl p-8 shadow-lg shadow-stone-200/50"
-                            >
-                                <h2 className="text-xl font-semibold text-stone-900 mb-6">Current Stage</h2>
-                                <div className="flex items-center gap-3 mb-6">
-                                    <div className={`w-3 h-3 rounded-full ${stageConfig[currentStage].color}`}></div>
-                                    <div className="text-2xl font-semibold text-stone-900">
-                                        {stageConfig[currentStage].label}
-                                    </div>
-                                </div>
-                                <div className="space-y-3">
-                                    {Object.entries(stageConfig).map(([stage, config]) => (
-                                        <div key={stage} className="flex items-center gap-3">
-                                            <div
-                                                className={`w-2 h-2 rounded-full ${stage === currentStage ? config.color : "bg-stone-300"
-                                                    }`}
-                                            ></div>
-                                            <div
-                                                className={`text-sm ${stage === currentStage ? "text-stone-900 font-medium" : "text-stone-500"
-                                                    }`}
-                                            >
-                                                {config.label}
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </motion.div>
+                            {/* Stage Indicator */}
+                            <StageIndicator currentStage={currentStage} />
+                        </div>
+
+                        {/* Profile Strength & Tasks Grid */}
+                        <div className="grid md:grid-cols-2 gap-6 mb-8">
+                            <ProfileStrengthCard strength={profileStrength} />
+                            <TaskList tasks={todoList} showStageFilter={false} />
                         </div>
 
                         {/* University Matches Section */}
@@ -269,17 +249,17 @@ export default function DashboardPage() {
                                 </Link>
                             </motion.div>
                         </motion.div>
-                    </motion.div>
-                </div>
-            </main>
+                    </motion.div >
+                </div >
+            </main >
 
             {/* Lock University Modal */}
-            <LockUniversityModal
+            < LockUniversityModal
                 university={universityToLock}
                 isOpen={isLockModalOpen}
                 onClose={handleLockCancel}
                 onConfirm={handleLockConfirm}
             />
-        </div>
+        </div >
     );
 }

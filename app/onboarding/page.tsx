@@ -24,9 +24,10 @@ export default function OnboardingPage() {
         const profile = {
             name: formData.name,
             email: formData.email,
-            academic_score: parseFloat(formData.academic_score),
-            budget: parseFloat(formData.budget),
-            preferred_country: formData.preferred_country,
+            gpa: parseFloat(formData.academic_score),
+            budget_per_year: parseFloat(formData.budget),
+            preferred_countries: [formData.preferred_country], // Array for future multi-select
+            profile_complete: true, // Mark profile as complete
         };
 
         setUserProfile(profile);

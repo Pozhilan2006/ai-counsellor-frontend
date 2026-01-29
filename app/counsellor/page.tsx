@@ -9,7 +9,7 @@ import Link from "next/link";
 
 export default function CounsellorPage() {
     const router = useRouter();
-    const { userProfile, currentStage } = useAppContext();
+    const { userProfile, currentStage, recommendations, setRecommendations } = useAppContext();
 
     const [question, setQuestion] = useState("");
     const [isLoading, setIsLoading] = useState(false);
@@ -38,9 +38,9 @@ export default function CounsellorPage() {
                 user_profile: {
                     name: userProfile.name,
                     email: userProfile.email,
-                    academic_score: userProfile.academic_score,
-                    budget: userProfile.budget,
-                    preferred_country: userProfile.preferred_country,
+                    gpa: userProfile.gpa,
+                    budget_per_year: userProfile.budget_per_year,
+                    preferred_countries: userProfile.preferred_countries,
                 },
                 current_stage: currentStage,
                 shortlisted_universities: [],
@@ -48,7 +48,14 @@ export default function CounsellorPage() {
             };
 
             const response = await callCounsellor(payload);
+            console.log("Counsellor: Universities received:", response.recommendations);
             setAiResponse(response);
+
+            // Update global recommendations if new ones are returned
+            if (response.recommendations && response.recommendations.length > 0) {
+                setRecommendations(response.recommendations);
+            }
+
             setQuestion("");
         } catch (err) {
             setError("Something went wrong. Try again.");
@@ -174,41 +181,65 @@ export default function CounsellorPage() {
                                 {aiResponse?.recommendations && aiResponse.recommendations.length > 0 && (
                                     <div>
                                         <h2 className="text-2xl font-semibold text-stone-900 mb-6">
-                                            University Recommendations
+                                            University Recommendations ({aiResponse.recommendations.length})
                                         </h2>
                                         <div className="space-y-4">
-                                            {aiResponse.recommendations.map((rec: any, idx: number) => (
+                                            {aiResponse.recommendations.map((uni: any, idx: number) => (
                                                 <motion.div
-                                                    key={idx}
+                                                    key={uni.id || idx}
                                                     initial={{ opacity: 0, y: 20 }}
                                                     animate={{ opacity: 1, y: 0 }}
-                                                    transition={{ duration: 0.4, delay: idx * 0.1 }}
+                                                    transition={{ duration: 0.4, delay: idx * 0.05 }}
                                                     className="bg-white/60 backdrop-blur-sm border border-stone-200/50 rounded-xl p-6 hover:bg-white/80 hover:border-stone-300/50 transition-all duration-300 hover:shadow-lg hover:shadow-stone-200/50"
                                                 >
-                                                    <div className="flex justify-between items-start mb-3">
-                                                        <h3 className="text-lg font-semibold text-stone-900">
-                                                            {rec.university}
-                                                        </h3>
-                                                        <span
-                                                            className={`px-3 py-1 rounded-full text-xs font-semibold ${rec.category === "Dream"
+                                                    <div className="flex justify-between items-start mb-4">
+                                                        <div>
+                                                            <h3 className="text-xl font-semibold text-stone-900 mb-1">
+                                                                {uni.name}
+                                                            </h3>
+                                                            <p className="text-sm text-stone-600">{uni.country}</p>
+                                                        </div>
+                                                        {uni.competitiveness && (
+                                                            <span
+                                                                className={`px-3 py-1 rounded-full text-xs font-semibold ${uni.competitiveness === "High"
                                                                     ? "bg-violet-100 border border-violet-200 text-violet-900"
-                                                                    : rec.category === "Target"
+                                                                    : uni.competitiveness === "Medium"
                                                                         ? "bg-blue-100 border border-blue-200 text-blue-900"
                                                                         : "bg-emerald-100 border border-emerald-200 text-emerald-900"
-                                                                }`}
-                                                        >
-                                                            {rec.category}
-                                                        </span>
+                                                                    }`}
+                                                            >
+                                                                {uni.competitiveness}
+                                                            </span>
+                                                        )}
                                                     </div>
-                                                    {rec.reason && (
-                                                        <p className="text-stone-700 mb-2 leading-relaxed">{rec.reason}</p>
-                                                    )}
-                                                    {rec.risk && (
-                                                        <p className="text-sm text-stone-600 italic">Risk: {rec.risk}</p>
-                                                    )}
+                                                    <div className="grid grid-cols-2 gap-4 text-sm">
+                                                        <div>
+                                                            <span className="text-stone-500 font-medium">Rank:</span>{" "}
+                                                            <span className="text-stone-900">
+                                                                {uni.rank ? `#${uni.rank}` : "Unranked"}
+                                                            </span>
+                                                        </div>
+                                                        <div>
+                                                            <span className="text-stone-500 font-medium">Tuition:</span>{" "}
+                                                            <span className="text-stone-900">
+                                                                {uni.estimated_tuition_usd
+                                                                    ? `$${uni.estimated_tuition_usd.toLocaleString()}/year`
+                                                                    : "N/A"}
+                                                            </span>
+                                                        </div>
+                                                    </div>
                                                 </motion.div>
                                             ))}
                                         </div>
+                                    </div>
+                                )}
+
+                                {/* Empty Recommendations State */}
+                                {aiResponse?.recommendations && aiResponse.recommendations.length === 0 && (
+                                    <div className="bg-amber-50 border border-amber-200 rounded-xl p-6">
+                                        <p className="text-amber-900 text-center">
+                                            No universities found. Try adjusting your preferences.
+                                        </p>
                                     </div>
                                 )}
                             </motion.div>

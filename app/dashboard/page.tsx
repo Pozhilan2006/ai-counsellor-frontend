@@ -6,12 +6,17 @@ import { useAppContext } from "@/lib/AppContext";
 import { callCounsellor } from "@/lib/api";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import UniversityCard from "@/components/UniversityCard";
+import LockUniversityModal from "@/components/LockUniversityModal";
+import type { University } from "@/lib/types";
 
 export default function DashboardPage() {
     const router = useRouter();
-    const { userProfile, currentStage, recommendations, setRecommendations } = useAppContext();
+    const { userProfile, currentStage, recommendations, setRecommendations, lockUniversity } = useAppContext();
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [universityToLock, setUniversityToLock] = useState<University | null>(null);
+    const [isLockModalOpen, setIsLockModalOpen] = useState(false);
 
     useEffect(() => {
         if (!userProfile) {
@@ -61,6 +66,25 @@ export default function DashboardPage() {
 
         fetchRecommendations();
     }, [userProfile, currentStage, recommendations.length, router, setRecommendations]);
+
+    // Lock modal handlers
+    const handleLockClick = (university: University) => {
+        setUniversityToLock(university);
+        setIsLockModalOpen(true);
+    };
+
+    const handleLockConfirm = () => {
+        if (universityToLock) {
+            lockUniversity(universityToLock);
+            setIsLockModalOpen(false);
+            setUniversityToLock(null);
+        }
+    };
+
+    const handleLockCancel = () => {
+        setIsLockModalOpen(false);
+        setUniversityToLock(null);
+    };
 
     if (!userProfile) {
         return null;
@@ -202,50 +226,13 @@ export default function DashboardPage() {
                             {!isLoading && !error && recommendations.length > 0 && (
                                 <div className="space-y-4">
                                     {recommendations.map((uni: any, idx: number) => (
-                                        <motion.div
+                                        <UniversityCard
                                             key={uni.id || idx}
-                                            initial={{ opacity: 0, y: 20 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            transition={{ duration: 0.4, delay: idx * 0.05 }}
-                                            className="bg-white/60 backdrop-blur-sm border border-stone-200/50 rounded-xl p-6 hover:bg-white/80 hover:border-stone-300/50 transition-all duration-300 hover:shadow-lg hover:shadow-stone-200/50"
-                                        >
-                                            <div className="flex justify-between items-start mb-4">
-                                                <div>
-                                                    <h3 className="text-xl font-semibold text-stone-900 mb-1">
-                                                        {uni.name}
-                                                    </h3>
-                                                    <p className="text-sm text-stone-600">{uni.country}</p>
-                                                </div>
-                                                {uni.competitiveness && (
-                                                    <span
-                                                        className={`px-3 py-1 rounded-full text-xs font-semibold ${uni.competitiveness === "High"
-                                                            ? "bg-violet-100 border border-violet-200 text-violet-900"
-                                                            : uni.competitiveness === "Medium"
-                                                                ? "bg-blue-100 border border-blue-200 text-blue-900"
-                                                                : "bg-emerald-100 border border-emerald-200 text-emerald-900"
-                                                            }`}
-                                                    >
-                                                        {uni.competitiveness}
-                                                    </span>
-                                                )}
-                                            </div>
-                                            <div className="grid grid-cols-2 gap-4 text-sm">
-                                                <div>
-                                                    <span className="text-stone-500 font-medium">Rank:</span>{" "}
-                                                    <span className="text-stone-900">
-                                                        {uni.rank ? `#${uni.rank}` : "Unranked"}
-                                                    </span>
-                                                </div>
-                                                <div>
-                                                    <span className="text-stone-500 font-medium">Tuition:</span>{" "}
-                                                    <span className="text-stone-900">
-                                                        {uni.estimated_tuition_usd
-                                                            ? `$${uni.estimated_tuition_usd.toLocaleString()}/year`
-                                                            : "N/A"}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </motion.div>
+                                            university={uni}
+                                            index={idx}
+                                            showActions={true}
+                                            onLockClick={handleLockClick}
+                                        />
                                     ))}
                                 </div>
                             )}
@@ -285,6 +272,14 @@ export default function DashboardPage() {
                     </motion.div>
                 </div>
             </main>
+
+            {/* Lock University Modal */}
+            <LockUniversityModal
+                university={universityToLock}
+                isOpen={isLockModalOpen}
+                onClose={handleLockCancel}
+                onConfirm={handleLockConfirm}
+            />
         </div>
     );
 }

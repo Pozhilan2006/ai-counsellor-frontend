@@ -56,7 +56,7 @@ export default function DashboardPage() {
 
             } catch (err) {
                 console.error("Dashboard: Failed to fetch recommendations:", err);
-                // Do NOT show error banner on UI as per requirements
+                setError("Failed to load university recommendations. Please refresh to try again.");
             } finally {
                 setIsLoading(false);
             }

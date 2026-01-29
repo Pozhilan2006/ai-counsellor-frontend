@@ -9,6 +9,8 @@ export async function callCounsellor(payload: any) {
     body: JSON.stringify(payload),
   });
 
+  console.log("API CALL: POST /counsel", Object.keys(payload));
+
   if (!res.ok) {
     throw new Error("Counsellor API failed");
   }
@@ -18,6 +20,8 @@ export async function callCounsellor(payload: any) {
 
 export async function getRecommendations(email: string) {
   const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+  console.log("API CALL: GET /recommendations", { email });
 
   const res = await fetch(`${baseUrl}/recommendations?email=${encodeURIComponent(email)}`, {
     method: "GET",

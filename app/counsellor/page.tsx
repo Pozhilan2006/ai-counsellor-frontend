@@ -38,13 +38,14 @@ export default function CounsellorPage() {
                 user_profile: {
                     name: userProfile.name,
                     email: userProfile.email,
-                    gpa: userProfile.gpa,
-                    budget_per_year: userProfile.budget_per_year,
-                    preferred_countries: userProfile.preferred_countries,
+                    academic_score: userProfile.gpa || 0,
+                    budget: userProfile.budget_per_year || 0,
+                    preferred_country: userProfile.preferred_countries?.[0] || "Any",
                 },
                 current_stage: currentStage,
-                shortlisted_universities: [],
-                locked_university: null,
+                shortlisted_universities: [], // specific requirement as per prompt
+                locked_university: null,      // specific requirement as per prompt
+                question: question,
             };
 
             const response = await callCounsellor(payload);

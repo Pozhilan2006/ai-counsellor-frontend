@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { useAppContext } from "@/lib/AppContext";
-import { callCounsellor } from "@/lib/api";
+import { getRecommendations } from "@/lib/api";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import UniversityCard from "@/components/UniversityCard";
@@ -39,29 +39,24 @@ export default function DashboardPage() {
             setError(null);
 
             try {
-                const payload = {
-                    user_profile: {
-                        name: userProfile.name,
-                        email: userProfile.email,
-                        gpa: userProfile.gpa,
-                        budget_per_year: userProfile.budget_per_year,
-                        preferred_countries: userProfile.preferred_countries,
-                    },
-                    current_stage: currentStage,
-                    shortlisted_universities: [],
-                    locked_university: null,
-                };
-
                 console.log("Dashboard: Fetching university recommendations...");
-                const response = await callCounsellor(payload);
-                console.log("Dashboard: Universities received:", response.recommendations);
+                const response = await getRecommendations(userProfile.email);
+                console.log("Dashboard: Universities received:", response);
 
-                if (response.recommendations) {
-                    setRecommendations(response.recommendations);
+                if (response.matches) {
+                    const allMatches = [
+                        ...(response.matches.dream || []),
+                        ...(response.matches.target || []),
+                        ...(response.matches.safe || [])
+                    ];
+                    setRecommendations(allMatches);
+                } else {
+                    setRecommendations([]);
                 }
+
             } catch (err) {
                 console.error("Dashboard: Failed to fetch recommendations:", err);
-                setError("Failed to load university recommendations. Please try again.");
+                // Do NOT show error banner on UI as per requirements
             } finally {
                 setIsLoading(false);
             }

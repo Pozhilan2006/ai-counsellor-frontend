@@ -15,3 +15,20 @@ export async function callCounsellor(payload: any) {
 
   return res.json();
 }
+
+export async function getRecommendations(email: string) {
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+  const res = await fetch(`${baseUrl}/recommendations?email=${encodeURIComponent(email)}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch recommendations");
+  }
+
+  return res.json();
+}

@@ -129,9 +129,12 @@ export default function UniversityCard({ university, index, showActions = true, 
                         whileHover={{ y: -1 }}
                         whileTap={{ scale: 0.98 }}
                         onClick={handleShortlistToggle}
-                        className={`flex-1 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${isInShortlist
-                            ? "bg-stone-100 text-stone-700 hover:bg-stone-200 border border-stone-300"
-                            : "bg-amber-500 text-white hover:bg-amber-600 shadow-sm"
+                        disabled={isLocked}
+                        className={`flex-1 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${isLocked
+                                ? "bg-stone-100 text-stone-400 cursor-not-allowed border border-stone-200"
+                                : isInShortlist
+                                    ? "bg-stone-100 text-stone-700 hover:bg-stone-200 border border-stone-300"
+                                    : "bg-amber-500 text-white hover:bg-amber-600 shadow-sm"
                             }`}
                     >
                         {isInShortlist ? "Remove from Shortlist" : "Add to Shortlist"}

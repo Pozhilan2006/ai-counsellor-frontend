@@ -56,67 +56,69 @@ export default function ProfileStrengthCard({ email }: ProfileStrengthCardProps)
     }, [email]);
 
     const getStatusColor = (status?: string) => {
-        const statusLower = status?.toLowerCase() ?? "unknown";
+        if (!status) return "text-stone-400 bg-stone-50 border-stone-200";
+
+        const statusLower = status.toLowerCase();
         switch (statusLower) {
             case "strong":
-            case "completed":
-            case "ready":
                 return "text-emerald-700 bg-emerald-100 border-emerald-200";
+            case "ok":
             case "average":
-            case "in progress":
+                return "text-blue-700 bg-blue-100 border-blue-200";
             case "drafting":
-            case "draft":
+            case "in progress":
                 return "text-amber-700 bg-amber-100 border-amber-200";
-            case "weak":
-            case "not started":
+            case "missing":
             case "incomplete":
-                return "text-red-700 bg-red-100 border-red-200";
+            case "weak":
+                return "text-stone-500 bg-stone-100 border-stone-200";
             default:
-                return "text-stone-700 bg-stone-100 border-stone-200";
+                return "text-stone-400 bg-stone-50 border-stone-200";
         }
     };
 
     const getProgressWidth = (status?: string, score?: number) => {
         if (score !== undefined) return `${score}%`;
+        if (!status) return "0%";
 
-        const statusLower = status?.toLowerCase() ?? "unknown";
+        const statusLower = status.toLowerCase();
         switch (statusLower) {
             case "strong":
-            case "completed":
-            case "ready":
                 return "100%";
+            case "ok":
             case "average":
-            case "in progress":
+                return "75%";
             case "drafting":
-            case "draft":
-                return "66%";
-            case "weak":
-            case "not started":
+            case "in progress":
+                return "50%";
+            case "missing":
             case "incomplete":
-                return "33%";
+            case "weak":
+                return "0%";
             default:
                 return "0%";
         }
     };
 
     const getProgressColor = (status?: string) => {
-        const statusLower = status?.toLowerCase() ?? "unknown";
+        if (!status) return "bg-stone-300";
+
+        const statusLower = status.toLowerCase();
         switch (statusLower) {
             case "strong":
-            case "completed":
-            case "ready":
                 return "bg-emerald-500";
+            case "ok":
             case "average":
-            case "in progress":
+                return "bg-blue-500";
             case "drafting":
-            case "draft":
+            case "in progress":
                 return "bg-amber-500";
-            case "weak":
-            case "not started":
+            case "missing":
             case "incomplete":
-                return "bg-red-500";
-            default:
+            case "weak":
                 return "bg-stone-400";
+            default:
+                return "bg-stone-300";
         }
     };
 
@@ -164,10 +166,10 @@ export default function ProfileStrengthCard({ email }: ProfileStrengthCardProps)
                         animate={{ width: `${strengthData?.completion_score ?? 0}%` }}
                         transition={{ duration: 1, ease: "easeOut" }}
                         className={`h-4 rounded-full ${(strengthData?.completion_score ?? 0) >= 80
-                                ? "bg-emerald-500"
-                                : (strengthData?.completion_score ?? 0) >= 50
-                                    ? "bg-amber-500"
-                                    : "bg-red-500"
+                            ? "bg-emerald-500"
+                            : (strengthData?.completion_score ?? 0) >= 50
+                                ? "bg-amber-500"
+                                : "bg-red-500"
                             }`}
                     ></motion.div>
                 </div>
@@ -193,13 +195,15 @@ export default function ProfileStrengthCard({ email }: ProfileStrengthCardProps)
                 <div>
                     <div className="flex items-center justify-between mb-2">
                         <span className="text-sm font-medium text-stone-700">Academics</span>
-                        <span
-                            className={`px-3 py-1 rounded-full text-xs font-semibold border ${getStatusColor(
-                                strengthData?.academics?.status
-                            )}`}
-                        >
-                            {strengthData?.academics?.status ?? "Unknown"}
-                        </span>
+                        {strengthData?.academics?.status && (
+                            <span
+                                className={`px-3 py-1 rounded-full text-xs font-semibold border ${getStatusColor(
+                                    strengthData.academics.status
+                                )}`}
+                            >
+                                {strengthData.academics.status}
+                            </span>
+                        )}
                     </div>
                     <div className="w-full bg-stone-200 rounded-full h-2">
                         <motion.div
@@ -215,13 +219,15 @@ export default function ProfileStrengthCard({ email }: ProfileStrengthCardProps)
                 <div>
                     <div className="flex items-center justify-between mb-2">
                         <span className="text-sm font-medium text-stone-700">Exams</span>
-                        <span
-                            className={`px-3 py-1 rounded-full text-xs font-semibold border ${getStatusColor(
-                                strengthData?.exams?.status
-                            )}`}
-                        >
-                            {strengthData?.exams?.status ?? "Unknown"}
-                        </span>
+                        {strengthData?.exams?.status && (
+                            <span
+                                className={`px-3 py-1 rounded-full text-xs font-semibold border ${getStatusColor(
+                                    strengthData.exams.status
+                                )}`}
+                            >
+                                {strengthData.exams.status}
+                            </span>
+                        )}
                     </div>
                     <div className="w-full bg-stone-200 rounded-full h-2">
                         <motion.div
@@ -237,13 +243,15 @@ export default function ProfileStrengthCard({ email }: ProfileStrengthCardProps)
                 <div>
                     <div className="flex items-center justify-between mb-2">
                         <span className="text-sm font-medium text-stone-700">Statement of Purpose</span>
-                        <span
-                            className={`px-3 py-1 rounded-full text-xs font-semibold border ${getStatusColor(
-                                strengthData?.sop?.status
-                            )}`}
-                        >
-                            {strengthData?.sop?.status ?? "Unknown"}
-                        </span>
+                        {strengthData?.sop?.status && (
+                            <span
+                                className={`px-3 py-1 rounded-full text-xs font-semibold border ${getStatusColor(
+                                    strengthData.sop.status
+                                )}`}
+                            >
+                                {strengthData.sop.status}
+                            </span>
+                        )}
                     </div>
                     <div className="w-full bg-stone-200 rounded-full h-2">
                         <motion.div
@@ -259,13 +267,15 @@ export default function ProfileStrengthCard({ email }: ProfileStrengthCardProps)
                 <div>
                     <div className="flex items-center justify-between mb-2">
                         <span className="text-sm font-medium text-stone-700">Documents</span>
-                        <span
-                            className={`px-3 py-1 rounded-full text-xs font-semibold border ${getStatusColor(
-                                strengthData?.documents?.status
-                            )}`}
-                        >
-                            {strengthData?.documents?.status ?? "Unknown"}
-                        </span>
+                        {strengthData?.documents?.status && (
+                            <span
+                                className={`px-3 py-1 rounded-full text-xs font-semibold border ${getStatusColor(
+                                    strengthData.documents.status
+                                )}`}
+                            >
+                                {strengthData.documents.status}
+                            </span>
+                        )}
                     </div>
                     <div className="w-full bg-stone-200 rounded-full h-2">
                         <motion.div

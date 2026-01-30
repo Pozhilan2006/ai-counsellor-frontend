@@ -143,8 +143,8 @@ export default function CounsellorPage() {
                                     {/* Message Bubble */}
                                     <div
                                         className={`rounded-2xl px-4 py-3 ${entry.role === "user"
-                                                ? "bg-stone-900 text-white"
-                                                : "bg-stone-100 text-stone-900"
+                                            ? "bg-stone-900 text-white"
+                                            : "bg-stone-100 text-stone-900"
                                             }`}
                                     >
                                         <p className="text-sm leading-relaxed whitespace-pre-wrap">
@@ -170,10 +170,10 @@ export default function CounsellorPage() {
                                                         {uni.competitiveness && (
                                                             <span
                                                                 className={`px-2 py-1 rounded-full text-xs font-semibold ${uni.competitiveness === "High"
-                                                                        ? "bg-violet-100 text-violet-900"
-                                                                        : uni.competitiveness === "Medium"
-                                                                            ? "bg-blue-100 text-blue-900"
-                                                                            : "bg-emerald-100 text-emerald-900"
+                                                                    ? "bg-violet-100 text-violet-900"
+                                                                    : uni.competitiveness === "Medium"
+                                                                        ? "bg-blue-100 text-blue-900"
+                                                                        : "bg-emerald-100 text-emerald-900"
                                                                     }`}
                                                             >
                                                                 {uni.competitiveness}
@@ -182,7 +182,7 @@ export default function CounsellorPage() {
                                                     </div>
                                                     {uni.why_it_fits && (
                                                         <p className="text-xs text-stone-600 mt-2">
-                                                            <strong>Why it fits:</strong> {uni.why_it_fits}
+                                                            {uni.why_it_fits}
                                                         </p>
                                                     )}
                                                 </div>

@@ -8,15 +8,31 @@ interface StageIndicatorProps {
 }
 
 export default function StageIndicator({ currentStage }: StageIndicatorProps) {
-    const stages: { name: Stage; label: string; icon: string }[] = [
-        { name: "ONBOARDING", label: "Onboarding", icon: "📝" },
-        { name: "DISCOVERY", label: "Discovery", icon: "🔍" },
-        { name: "SHORTLIST", label: "Shortlist", icon: "⭐" },
-        { name: "LOCKED", label: "Locked", icon: "🔒" },
-        { name: "APPLICATION", label: "Application", icon: "📄" },
+    const stages: { name: Stage; label: string; description: string }[] = [
+        {
+            name: "ONBOARDING",
+            label: "Building Profile",
+            description: "Complete your profile to get started."
+        },
+        {
+            name: "DISCOVERY",
+            label: "Discovering Universities",
+            description: "Explore university recommendations tailored to your profile."
+        },
+        {
+            name: "SHORTLIST",
+            label: "Finalizing Universities",
+            description: "Add universities to your shortlist and compare options."
+        },
+        {
+            name: "LOCKED",
+            label: "Preparing Applications",
+            description: "You've locked your choice. Focus on your application."
+        },
     ];
 
     const currentIndex = stages.findIndex((s) => s.name === currentStage);
+    const activeStage = currentIndex >= 0 ? stages[currentIndex] : stages[0];
 
     return (
         <motion.div
@@ -25,7 +41,7 @@ export default function StageIndicator({ currentStage }: StageIndicatorProps) {
             transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
             className="bg-white/60 backdrop-blur-sm border border-stone-200/50 rounded-2xl p-8 shadow-lg shadow-stone-200/50"
         >
-            <h2 className="text-xl font-semibold text-stone-900 mb-6">Your Journey</h2>
+            <h2 className="text-xl font-semibold text-stone-900 mb-6">Current Stage</h2>
 
             <div className="relative">
                 {/* Progress Line */}
@@ -62,13 +78,15 @@ export default function StageIndicator({ currentStage }: StageIndicatorProps) {
                                     {isCompleted ? (
                                         <span className="text-white">✓</span>
                                     ) : (
-                                        <span className={isPending ? "opacity-40" : ""}>{stage.icon}</span>
+                                        <span className={`text-sm font-bold ${isPending ? "text-stone-400" : "text-stone-900"}`}>
+                                            {idx + 1}
+                                        </span>
                                     )}
                                 </motion.div>
 
                                 {/* Label */}
                                 <div
-                                    className={`mt-3 text-xs font-medium text-center ${isCurrent
+                                    className={`mt-3 text-xs font-medium text-center max-w-[80px] ${isCurrent
                                             ? "text-stone-900"
                                             : isCompleted
                                                 ? "text-emerald-700"
@@ -85,18 +103,13 @@ export default function StageIndicator({ currentStage }: StageIndicatorProps) {
 
             {/* Current Stage Info */}
             <div className="mt-8 pt-6 border-t border-stone-200">
-                <div className="flex items-center gap-2 mb-2">
-                    <span className="text-2xl">{stages[currentIndex].icon}</span>
+                <div className="mb-2">
                     <span className="text-sm font-semibold text-stone-900">
-                        Current: {stages[currentIndex].label}
+                        {activeStage.label}
                     </span>
                 </div>
                 <p className="text-sm text-stone-600">
-                    {currentStage === "ONBOARDING" && "Complete your profile to get started."}
-                    {currentStage === "DISCOVERY" && "Explore university recommendations tailored to your profile."}
-                    {currentStage === "SHORTLIST" && "Add universities to your shortlist and compare options."}
-                    {currentStage === "LOCKED" && "You've locked your choice. Focus on your application."}
-                    {currentStage === "APPLICATION" && "Follow your personalized application roadmap."}
+                    {activeStage.description}
                 </p>
             </div>
         </motion.div>

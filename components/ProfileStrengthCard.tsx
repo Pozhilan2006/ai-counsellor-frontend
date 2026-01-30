@@ -3,7 +3,6 @@
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { getProfileStrength } from "@/lib/api";
-import Link from "next/link";
 
 interface ProfileStrengthCardProps {
     email: string;
@@ -11,22 +10,10 @@ interface ProfileStrengthCardProps {
 
 interface ProfileStrengthData {
     completion_score: number;
-    academics: {
-        status: string;
-        score?: number;
-    };
-    exams: {
-        status: string;
-        score?: number;
-    };
-    sop: {
-        status: string;
-        score?: number;
-    };
-    documents: {
-        status: string;
-        score?: number;
-    };
+    academics: { status: string; score?: number };
+    exams: { status: string; score?: number };
+    sop: { status: string; score?: number };
+    documents: { status: string; score?: number };
     missing_fields?: string[];
 }
 
@@ -44,275 +31,77 @@ export default function ProfileStrengthCard({ email }: ProfileStrengthCardProps)
                 setStrengthData(data);
             } catch (err) {
                 console.error("Failed to fetch profile strength:", err);
-                setError("Unable to calculate right now");
+                setError("Unable to calculate");
             } finally {
                 setIsLoading(false);
             }
         };
 
-        if (email) {
-            fetchStrength();
-        }
+        if (email) fetchStrength();
     }, [email]);
 
-    const getStatusColor = (status?: string) => {
-        if (!status) return "text-stone-400 bg-stone-50 border-stone-200";
-
-        const statusLower = status.toLowerCase();
-        switch (statusLower) {
-            case "strong":
-                return "text-emerald-700 bg-emerald-100 border-emerald-200";
-            case "ok":
-            case "average":
-                return "text-blue-700 bg-blue-100 border-blue-200";
-            case "drafting":
-            case "in progress":
-                return "text-amber-700 bg-amber-100 border-amber-200";
-            case "missing":
-            case "incomplete":
-            case "weak":
-                return "text-stone-500 bg-stone-100 border-stone-200";
-            default:
-                return "text-stone-400 bg-stone-50 border-stone-200";
-        }
-    };
-
-    const getProgressWidth = (status?: string, score?: number) => {
-        if (score !== undefined) return `${score}%`;
-        if (!status) return "0%";
-
-        const statusLower = status.toLowerCase();
-        switch (statusLower) {
-            case "strong":
-                return "100%";
-            case "ok":
-            case "average":
-                return "75%";
-            case "drafting":
-            case "in progress":
-                return "50%";
-            case "missing":
-            case "incomplete":
-            case "weak":
-                return "0%";
-            default:
-                return "0%";
-        }
-    };
-
-    const getProgressColor = (status?: string) => {
-        if (!status) return "bg-stone-300";
-
-        const statusLower = status.toLowerCase();
-        switch (statusLower) {
-            case "strong":
-                return "bg-emerald-500";
-            case "ok":
-            case "average":
-                return "bg-blue-500";
-            case "drafting":
-            case "in progress":
-                return "bg-amber-500";
-            case "missing":
-            case "incomplete":
-            case "weak":
-                return "bg-stone-400";
-            default:
-                return "bg-stone-300";
-        }
+    const getStatusChipClass = (status: string) => {
+        const s = status.toLowerCase();
+        if (s === "strong" || s === "completed" || s === "ready") return "chip chip-success";
+        if (s === "average" || s === "in progress" || s === "draft") return "chip chip-warning";
+        return "chip chip-neutral";
     };
 
     if (isLoading) {
         return (
-            <div className="bg-white/60 backdrop-blur-sm border border-stone-200/50 rounded-2xl p-8 shadow-lg shadow-stone-200/50">
-                <h2 className="text-xl font-semibold text-stone-900 mb-6">Profile Strength</h2>
-                <div className="text-center py-8 text-stone-600">
-                    <div className="w-12 h-12 border-4 border-stone-200 border-t-stone-900 rounded-full animate-spin mx-auto mb-4"></div>
-                    <p className="text-sm">Loading profile strength...</p>
-                </div>
+            <div className="card-glass p-6 animate-pulse">
+                <div className="h-6 w-1/3 bg-slate-200 rounded mb-6"></div>
+                <div className="h-4 w-full bg-slate-100 rounded mb-4"></div>
+                <div className="h-4 w-2/3 bg-slate-100 rounded"></div>
             </div>
         );
     }
 
-    if (error || !strengthData) {
-        return (
-            <div className="bg-white/60 backdrop-blur-sm border border-stone-200/50 rounded-2xl p-8 shadow-lg shadow-stone-200/50">
-                <h2 className="text-xl font-semibold text-stone-900 mb-6">Profile Strength</h2>
-                <div className="bg-stone-50 border border-stone-200 rounded-xl p-6 text-center">
-                    <p className="text-stone-600">{error || "Unable to calculate right now"}</p>
-                </div>
-            </div>
-        );
-    }
+    if (error || !strengthData) return null;
 
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-            className="bg-white/60 backdrop-blur-sm border border-stone-200/50 rounded-2xl p-8 shadow-lg shadow-stone-200/50"
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="card-glass p-6 relative overflow-hidden"
         >
-            <h2 className="text-xl font-semibold text-stone-900 mb-6">Profile Strength</h2>
+            <div className="flex justify-between items-start mb-6">
+                <div>
+                    <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+                        <span className="text-xl">💪</span> Profile Strength
+                    </h2>
+                    <p className="text-sm text-slate-500">Readiness for 2026 application</p>
+                </div>
+                <div className="bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full text-xl font-bold border border-emerald-100 shadow-sm">
+                    {strengthData.completion_score}%
+                </div>
+            </div>
 
-            {/* Overall Completion Score */}
-            <div className="mb-6 pb-6 border-b border-stone-200">
-                <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium text-stone-700">Overall Completeness</span>
-                    <span className="text-2xl font-semibold text-stone-900">{strengthData?.completion_score ?? 0}%</span>
-                </div>
-                <div className="w-full bg-stone-200 rounded-full h-4 overflow-hidden">
-                    <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: `${strengthData?.completion_score ?? 0}%` }}
-                        transition={{ duration: 1, ease: "easeOut" }}
-                        className={`h-4 rounded-full ${(strengthData?.completion_score ?? 0) >= 80
-                            ? "bg-emerald-500"
-                            : (strengthData?.completion_score ?? 0) >= 50
-                                ? "bg-amber-500"
-                                : "bg-red-500"
-                            }`}
-                    ></motion.div>
-                </div>
-                {strengthData?.missing_fields && strengthData.missing_fields.length > 0 && (
-                    <div className="mt-3">
-                        <p className="text-xs font-medium text-stone-600 mb-2">Missing:</p>
-                        <div className="flex flex-wrap gap-2">
-                            {strengthData.missing_fields.map((field) => (
-                                <span
-                                    key={field}
-                                    className="px-2 py-1 bg-amber-50 border border-amber-200 text-amber-700 rounded text-xs"
-                                >
-                                    {field}
-                                </span>
-                            ))}
-                        </div>
-                    </div>
-                )}
+            {/* Main Progress Bar */}
+            <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden mb-8">
+                <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${strengthData.completion_score}%` }}
+                    transition={{ duration: 1, ease: "easeOut" }}
+                    className="h-full bg-gradient-to-r from-emerald-500 to-teal-400"
+                />
             </div>
 
             <div className="space-y-4">
-                {/* Academics */}
-                <div>
-                    <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-medium text-stone-700">Academics</span>
-                        {strengthData?.academics?.status && (
-                            <span
-                                className={`px-3 py-1 rounded-full text-xs font-semibold border ${getStatusColor(
-                                    strengthData.academics.status
-                                )}`}
-                            >
-                                {strengthData.academics.status}
-                            </span>
-                        )}
+                {[
+                    { label: "Academics", data: strengthData.academics },
+                    { label: "Exams", data: strengthData.exams },
+                    { label: "SOP", data: strengthData.sop },
+                    { label: "Documents", data: strengthData.documents },
+                ].map((item) => (
+                    <div key={item.label} className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 transition-colors border border-transparent hover:border-slate-100">
+                        <span className="font-medium text-slate-700">{item.label}</span>
+                        <span className={getStatusChipClass(item.data.status)}>
+                            {item.data.status}
+                        </span>
                     </div>
-                    <div className="w-full bg-stone-200 rounded-full h-2">
-                        <motion.div
-                            initial={{ width: 0 }}
-                            animate={{ width: getProgressWidth(strengthData?.academics?.status, strengthData?.academics?.score) }}
-                            transition={{ duration: 0.8, delay: 0.1 }}
-                            className={`h-2 rounded-full ${getProgressColor(strengthData?.academics?.status)}`}
-                        ></motion.div>
-                    </div>
-                </div>
-
-                {/* Exams */}
-                <div>
-                    <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-medium text-stone-700">Exams</span>
-                        {strengthData?.exams?.status && (
-                            <span
-                                className={`px-3 py-1 rounded-full text-xs font-semibold border ${getStatusColor(
-                                    strengthData.exams.status
-                                )}`}
-                            >
-                                {strengthData.exams.status}
-                            </span>
-                        )}
-                    </div>
-                    <div className="w-full bg-stone-200 rounded-full h-2">
-                        <motion.div
-                            initial={{ width: 0 }}
-                            animate={{ width: getProgressWidth(strengthData?.exams?.status, strengthData?.exams?.score) }}
-                            transition={{ duration: 0.8, delay: 0.2 }}
-                            className={`h-2 rounded-full ${getProgressColor(strengthData?.exams?.status)}`}
-                        ></motion.div>
-                    </div>
-                </div>
-
-                {/* SOP */}
-                <div>
-                    <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-medium text-stone-700">Statement of Purpose</span>
-                        {strengthData?.sop?.status && (
-                            <span
-                                className={`px-3 py-1 rounded-full text-xs font-semibold border ${getStatusColor(
-                                    strengthData.sop.status
-                                )}`}
-                            >
-                                {strengthData.sop.status}
-                            </span>
-                        )}
-                    </div>
-                    <div className="w-full bg-stone-200 rounded-full h-2">
-                        <motion.div
-                            initial={{ width: 0 }}
-                            animate={{ width: getProgressWidth(strengthData?.sop?.status, strengthData?.sop?.score) }}
-                            transition={{ duration: 0.8, delay: 0.3 }}
-                            className={`h-2 rounded-full ${getProgressColor(strengthData?.sop?.status)}`}
-                        ></motion.div>
-                    </div>
-                </div>
-
-                {/* Documents */}
-                <div>
-                    <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-medium text-stone-700">Documents</span>
-                        {strengthData?.documents?.status && (
-                            <span
-                                className={`px-3 py-1 rounded-full text-xs font-semibold border ${getStatusColor(
-                                    strengthData.documents.status
-                                )}`}
-                            >
-                                {strengthData.documents.status}
-                            </span>
-                        )}
-                    </div>
-                    <div className="w-full bg-stone-200 rounded-full h-2">
-                        <motion.div
-                            initial={{ width: 0 }}
-                            animate={{ width: getProgressWidth(strengthData?.documents?.status, strengthData?.documents?.score) }}
-                            transition={{ duration: 0.8, delay: 0.4 }}
-                            className={`h-2 rounded-full ${getProgressColor(strengthData?.documents?.status)}`}
-                        ></motion.div>
-                    </div>
-                </div>
-            </div>
-
-            {/* Helper CTAs */}
-            <div className="mt-6 pt-6 border-t border-stone-200 space-y-2">
-                <Link
-                    href="/documents"
-                    className="block w-full text-center px-4 py-2 text-sm font-medium text-stone-700 bg-white border border-stone-200 rounded-lg hover:bg-stone-50 hover:border-stone-300 transition-all duration-200"
-                >
-                    📁 View Vault
-                </Link>
-                <Link
-                    href="/sop"
-                    className="block w-full text-center px-4 py-2 text-sm font-medium text-stone-700 bg-white border border-stone-200 rounded-lg hover:bg-stone-50 hover:border-stone-300 transition-all duration-200"
-                >
-                    ✍️ Complete SOP
-                </Link>
-            </div>
-
-            {/* Overall Assessment */}
-            <div className="mt-6 pt-6 border-t border-stone-200">
-                <p className="text-sm text-stone-600">
-                    {(strengthData?.completion_score ?? 0) >= 80
-                        ? "🎉 Your profile is strong! You're well-prepared for applications."
-                        : (strengthData?.completion_score ?? 0) >= 50
-                            ? "📈 You're making good progress. Keep working on the remaining items."
-                            : "💡 Focus on strengthening your profile before applying."}
-                </p>
+                ))}
             </div>
         </motion.div>
     );

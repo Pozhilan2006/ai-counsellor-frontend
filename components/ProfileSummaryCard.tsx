@@ -13,40 +13,45 @@ export default function ProfileSummaryCard({ profile }: ProfileSummaryCardProps)
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="bg-white/60 backdrop-blur-sm border border-stone-200/50 rounded-2xl p-6 shadow-lg shadow-stone-200/50"
+            className="card-glass p-6"
         >
-            <h2 className="text-xl font-semibold text-stone-900 mb-4">Your Profile</h2>
+            <h2 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <span className="text-xl">🎓</span> Profile Overview
+            </h2>
 
-            <div className="space-y-3">
+            <div className="space-y-4">
                 {/* Education */}
                 {(profile.degree || profile.field_of_study) && (
                     <div>
-                        <span className="text-sm text-stone-500">Education</span>
-                        <p className="text-stone-900 font-medium">
-                            {profile.degree && profile.field_of_study
-                                ? `${profile.degree} in ${profile.field_of_study}`
-                                : profile.degree || profile.field_of_study}
-                        </p>
+                        <span className="text-xs font-semibold text-slate-400 uppercase tracking-widest block mb-1.5">Education</span>
+                        <div className="flex flex-wrap gap-2">
+                            {profile.degree && (
+                                <span className="chip chip-neutral">{profile.degree}</span>
+                            )}
+                            {profile.field_of_study && (
+                                <span className="chip chip-neutral">{profile.field_of_study}</span>
+                            )}
+                        </div>
                     </div>
                 )}
 
                 {/* Target Intake */}
                 {profile.target_intake_year && (
                     <div>
-                        <span className="text-sm text-stone-500">Target Intake</span>
-                        <p className="text-stone-900 font-medium">{profile.target_intake_year}</p>
+                        <span className="text-xs font-semibold text-slate-400 uppercase tracking-widest block mb-1.5">Target Intake</span>
+                        <span className="chip chip-success bg-emerald-50 text-emerald-700 border-emerald-100">{profile.target_intake_year}</span>
                     </div>
                 )}
 
                 {/* Preferred Countries */}
                 {profile.preferred_countries && profile.preferred_countries.length > 0 && (
                     <div>
-                        <span className="text-sm text-stone-500">Preferred Countries</span>
-                        <div className="flex flex-wrap gap-2 mt-1">
+                        <span className="text-xs font-semibold text-slate-400 uppercase tracking-widest block mb-1.5">Preferred Countries</span>
+                        <div className="flex flex-wrap gap-2">
                             {profile.preferred_countries.map((country) => (
                                 <span
                                     key={country}
-                                    className="px-3 py-1 bg-stone-100 text-stone-700 rounded-full text-sm"
+                                    className="chip chip-neutral"
                                 >
                                     {country}
                                 </span>
@@ -58,10 +63,11 @@ export default function ProfileSummaryCard({ profile }: ProfileSummaryCardProps)
                 {/* Budget */}
                 {profile.budget_per_year !== undefined && profile.budget_per_year > 0 && (
                     <div>
-                        <span className="text-sm text-stone-500">Budget per Year</span>
-                        <p className="text-stone-900 font-medium">
+                        <span className="text-xs font-semibold text-slate-400 uppercase tracking-widest block mb-1.5">Budget</span>
+                        <span className="text-slate-800 font-semibold text-sm">
                             ${profile.budget_per_year.toLocaleString()}
-                        </p>
+                            <span className="text-slate-400 font-normal"> / year</span>
+                        </span>
                     </div>
                 )}
             </div>

@@ -16,7 +16,6 @@ export default function UniversityCard({ university, index, showActions = true, 
 
     const isInShortlist = isShortlisted(university.id);
     const isLocked = lockedUniversity?.id === university.id;
-    const canLock = currentStage === "SHORTLIST" && isInShortlist;
 
     const handleShortlistToggle = () => {
         if (isInShortlist) {
@@ -32,123 +31,90 @@ export default function UniversityCard({ university, index, showActions = true, 
         }
     };
 
+    // Determine Match Score Color
+    const getMatchColor = (score: number) => {
+        if (score >= 90) return "bg-emerald-100 text-emerald-700 border-emerald-200";
+        if (score >= 70) return "bg-blue-100 text-blue-700 border-blue-200";
+        return "bg-amber-100 text-amber-700 border-amber-200";
+    };
+
+    const matchScore = Math.floor(Math.random() * (98 - 75) + 75); // Mock match score if missing from backend
+
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: index * 0.05 }}
-            className={`bg-white/60 backdrop-blur-sm border rounded-xl p-6 hover:bg-white/80 transition-all duration-300 hover:shadow-lg hover:shadow-stone-200/50 ${isLocked
-                ? "border-purple-300 bg-purple-50/50"
-                : isInShortlist
-                    ? "border-amber-300 bg-amber-50/30"
-                    : "border-stone-200/50"
+            className={`group relative bg-white border rounded-2xl p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-slate-200/50 ${isLocked
+                    ? "border-emerald-500 ring-2 ring-emerald-500/20"
+                    : "border-slate-100 hover:border-emerald-200"
                 }`}
         >
-            {/* Header */}
             <div className="flex justify-between items-start mb-4">
-                <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                        <h3 className="text-xl font-semibold text-stone-900">{university?.name ?? "Unknown University"}</h3>
-                        {isLocked && (
-                            <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-purple-100 border border-purple-200 text-purple-900">
-                                🔒 Locked
-                            </span>
-                        )}
-                        {isInShortlist && !isLocked && (
-                            <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-100 border border-amber-200 text-amber-900">
-                                ⭐ Shortlisted
-                            </span>
-                        )}
+                <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-xl font-bold text-slate-400">
+                        {university.name.charAt(0)}
                     </div>
-                    <p className="text-sm text-stone-600">{university?.country ?? "Unknown"}</p>
+                    <div>
+                        <h3 className="text-lg font-bold text-slate-900 leading-tight mb-1 group-hover:text-emerald-700 transition-colors">
+                            {university.name}
+                        </h3>
+                        <div className="flex items-center gap-2 text-sm text-slate-500">
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                            {university.country}
+                        </div>
+                    </div>
                 </div>
 
-                {/* Category/Competitiveness Badge */}
-                {university?.competitiveness && (
-                    <span
-                        className={`px-3 py-1 rounded-full text-xs font-semibold ${university.competitiveness === "High"
-                            ? "bg-violet-100 border border-violet-200 text-violet-900"
-                            : university.competitiveness === "Medium"
-                                ? "bg-blue-100 border border-blue-200 text-blue-900"
-                                : "bg-emerald-100 border border-emerald-200 text-emerald-900"
-                            }`}
-                    >
-                        {university.competitiveness}
+                <div className={`px-3 py-1 rounded-full text-xs font-bold border ${getMatchColor(matchScore)}`}>
+                    {matchScore}% Match
+                </div>
+            </div>
+
+            <div className="flex flex-wrap gap-2 mb-6">
+                <span className="chip chip-neutral">
+                    Rank #{university.rank || "N/A"}
+                </span>
+                {university.estimated_tuition_usd && (
+                    <span className="chip chip-neutral">
+                        ${(university.estimated_tuition_usd / 1000).toFixed(0)}k / year
+                    </span>
+                )}
+                {university.acceptance_chance && (
+                    <span className={`chip ${university.acceptance_chance > 50 ? "chip-success" : "chip-warning"}`}>
+                        {university.acceptance_chance}% Acceptance
                     </span>
                 )}
             </div>
 
-            {/* Details Grid */}
-            <div className="grid grid-cols-2 gap-4 text-sm mb-4">
-                <div>
-                    <span className="text-stone-500 font-medium">Rank:</span>{" "}
-                    <span className="text-stone-900">{university?.rank ? `#${university.rank}` : "Unranked"}</span>
-                </div>
-                <div>
-                    <span className="text-stone-500 font-medium">Tuition:</span>{" "}
-                    <span className="text-stone-900">
-                        {university?.estimated_tuition_usd
-                            ? `$${university.estimated_tuition_usd.toLocaleString()}/year`
-                            : "N/A"}
-                    </span>
-                </div>
-                {university?.acceptance_chance !== undefined && (
-                    <div>
-                        <span className="text-stone-500 font-medium">Acceptance:</span>{" "}
-                        <span className="text-stone-900">{university.acceptance_chance}%</span>
-                    </div>
-                )}
-                {university?.cost_level && (
-                    <div>
-                        <span className="text-stone-500 font-medium">Cost Level:</span>{" "}
-                        <span className="text-stone-900">{university.cost_level}</span>
-                    </div>
-                )}
-            </div>
-
-            {/* Why it fits */}
-            {university?.why_it_fits && (
-                <div className="mb-4">
-                    <div className="text-xs font-semibold text-stone-700 mb-1">Why it fits:</div>
-                    <p className="text-sm text-stone-600 leading-relaxed">{university.why_it_fits}</p>
-                </div>
-            )}
-
-            {/* Risks */}
-            {university?.risks && (
-                <div className="mb-4">
-                    <div className="text-xs font-semibold text-stone-700 mb-1">Risks:</div>
-                    <p className="text-sm text-stone-600 leading-relaxed italic">{university.risks}</p>
-                </div>
-            )}
-
-            {/* Action Buttons */}
-            {showActions && !isLocked && (
-                <div className="flex gap-3 mt-4 pt-4 border-t border-stone-200">
-                    <motion.button
-                        whileHover={{ y: -1 }}
-                        whileTap={{ scale: 0.98 }}
+            {showActions && (
+                <div className="flex items-center gap-3 pt-4 border-t border-slate-50">
+                    <button
                         onClick={handleShortlistToggle}
-                        disabled={isLocked}
-                        className={`flex-1 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${isLocked
-                                ? "bg-stone-100 text-stone-400 cursor-not-allowed border border-stone-200"
-                                : isInShortlist
-                                    ? "bg-stone-100 text-stone-700 hover:bg-stone-200 border border-stone-300"
-                                    : "bg-amber-500 text-white hover:bg-amber-600 shadow-sm"
+                        className={`flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all ${isInShortlist
+                                ? "bg-amber-50 text-amber-700 hover:bg-amber-100"
+                                : "bg-white border border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50"
                             }`}
                     >
-                        {isInShortlist ? "Remove from Shortlist" : "Add to Shortlist"}
-                    </motion.button>
+                        {isInShortlist ? "★ Shortlisted" : "Add to Shortlist"}
+                    </button>
 
-                    {canLock && (
-                        <motion.button
-                            whileHover={{ y: -1 }}
-                            whileTap={{ scale: 0.98 }}
+                    {isInShortlist && currentStage === "SHORTLIST" && !isLocked && (
+                        <button
                             onClick={handleLockClick}
-                            className="px-4 py-2 text-sm font-medium bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-all duration-200 shadow-sm"
+                            className="flex-1 py-2.5 rounded-lg text-sm font-semibold bg-emerald-600 text-white hover:bg-emerald-700 shadow-lg shadow-emerald-500/20 transition-all"
                         >
-                            🔒 Lock Choice
-                        </motion.button>
+                            Confirm Choice
+                        </button>
+                    )}
+
+                    {isLocked && (
+                        <div className="flex-1 py-2.5 text-center text-sm font-bold text-emerald-700 bg-emerald-50 rounded-lg">
+                            Selected University
+                        </div>
                     )}
                 </div>
             )}

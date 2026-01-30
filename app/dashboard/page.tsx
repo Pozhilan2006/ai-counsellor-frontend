@@ -29,16 +29,13 @@ export default function DashboardPage() {
             return;
         }
 
-        // Auto-fetch universities on dashboard load
         const fetchRecommendations = async () => {
-            // CRITICAL GUARD: Only fetch if profile is complete
             if (!userProfile.profile_complete) {
                 console.log("Dashboard: Profile incomplete, skipping recommendations fetch");
                 setError("Please complete your onboarding to see university recommendations.");
                 return;
             }
 
-            // Skip if we already have recommendations
             if (recommendations.length > 0) {
                 console.log("Using cached recommendations:", recommendations);
                 return;
@@ -51,42 +48,27 @@ export default function DashboardPage() {
                 console.log("Dashboard: Fetching university recommendations...");
                 const response = await getRecommendations(userProfile.email);
                 console.log("Dashboard: Full API response:", response);
-                console.log("Dashboard: Response type:", typeof response);
-                console.log("Dashboard: Response keys:", Object.keys(response || {}));
 
-                // CRITICAL: Check actual response structure
                 let universitiesArray: any[] = [];
 
                 if (Array.isArray(response)) {
-                    // Response is directly an array
                     universitiesArray = response;
-                    console.log("Dashboard: Response is direct array, length:", universitiesArray.length);
                 } else if (response && Array.isArray(response.recommendations)) {
-                    // Response has recommendations key
                     universitiesArray = response.recommendations;
-                    console.log("Dashboard: Found response.recommendations, length:", universitiesArray.length);
                 } else if (response && Array.isArray(response.universities)) {
-                    // Response has universities key
                     universitiesArray = response.universities;
-                    console.log("Dashboard: Found response.universities, length:", universitiesArray.length);
                 } else if (response && response.matches) {
-                    // Response has matches object with dream/target/safe
                     universitiesArray = [
                         ...(response.matches.dream || []),
                         ...(response.matches.target || []),
                         ...(response.matches.safe || [])
                     ];
-                    console.log("Dashboard: Found response.matches, total length:", universitiesArray.length);
-                } else {
-                    console.warn("Dashboard: Unknown response structure", response);
                 }
 
-                console.log("Dashboard: Setting recommendations array with length:", universitiesArray.length);
                 setRecommendations(universitiesArray);
 
             } catch (err) {
-                // Display backend error message verbatim
-                const errorMessage = err instanceof Error ? err.message : "Failed to load university recommendations. Please refresh to try again.";
+                const errorMessage = err instanceof Error ? err.message : "Failed to load university recommendations.";
                 console.error("Dashboard: Failed to fetch recommendations:", errorMessage);
                 setError(errorMessage);
             } finally {
@@ -97,7 +79,6 @@ export default function DashboardPage() {
         fetchRecommendations();
     }, [userProfile, currentStage, recommendations.length, router, setRecommendations]);
 
-    // Lock modal handlers
     const handleLockClick = (university: University) => {
         setUniversityToLock(university);
         setIsLockModalOpen(true);
@@ -121,115 +102,165 @@ export default function DashboardPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-stone-50 via-amber-50/30 to-stone-100 text-stone-900 pb-20">
-            <main className="pt-6 px-6">
-                <div className="max-w-7xl mx-auto">
-                    {/* Header */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                        className="mb-8"
-                    >
-                        <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-stone-900 mb-2">
-                            Welcome back, {userProfile.name}
-                        </h1>
-                        <p className="text-stone-600">
-                            Your personalized study-abroad guidance dashboard.
+        <div className="min-h-screen bg-white text-neutral-900">
+            {/* Header - Editorial */}
+            <div className="border-b border-neutral-200 bg-white sticky top-0 z-40">
+                <div className="max-w-screen-2xl mx-auto px-8 md:px-16 py-8">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <p className="label-editorial mb-2">Control Room</p>
+                            <h1 className="text-4xl md:text-6xl font-bold tracking-tight">
+                                {userProfile.name}
+                            </h1>
+                        </div>
+                        <Link
+                            href="/profile"
+                            className="btn-editorial-outline"
+                        >
+                            Edit Profile
+                        </Link>
+                    </div>
+                </div>
+            </div>
+
+            <main className="max-w-screen-2xl mx-auto px-8 md:px-16 py-16">
+                {/* Stats Overview - Minimal */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6 }}
+                    className="grid md:grid-cols-3 gap-px bg-neutral-200 mb-16"
+                >
+                    <div className="bg-white p-12">
+                        <p className="label-editorial mb-4">Current Stage</p>
+                        <p className="text-3xl font-bold">
+                            {currentStage === "ONBOARDING" && "Building Profile"}
+                            {currentStage === "DISCOVERY" && "Discovering"}
+                            {currentStage === "SHORTLIST" && "Finalizing"}
+                            {currentStage === "LOCKED" && "Preparing"}
                         </p>
-                    </motion.div>
+                    </div>
+                    <div className="bg-white p-12">
+                        <p className="label-editorial mb-4">Universities</p>
+                        <p className="stat-editorial">{recommendations.length}</p>
+                    </div>
+                    <div className="bg-white p-12">
+                        <p className="label-editorial mb-4">Tasks</p>
+                        <p className="stat-editorial">{todoList?.length || 0}</p>
+                    </div>
+                </motion.div>
 
-                    {/* Main Grid Layout */}
-                    <div className="grid lg:grid-cols-3 gap-6">
-                        {/* Left Column - Context & Status */}
-                        <div className="lg:col-span-1 space-y-6">
-                            {/* SECTION A: Profile Summary */}
-                            <ProfileSummaryCard profile={userProfile} />
+                {/* Main Content Grid */}
+                <div className="grid lg:grid-cols-2 gap-16">
+                    {/* Left Column */}
+                    <div className="space-y-16">
+                        {/* Profile Summary - Editorial */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.6, delay: 0.1 }}
+                        >
+                            <p className="label-editorial mb-6">Profile Overview</p>
+                            <div className="space-y-6 border-t border-neutral-200 pt-6">
+                                {userProfile.degree && userProfile.field_of_study && (
+                                    <div>
+                                        <p className="text-sm text-neutral-500 mb-1">Education</p>
+                                        <p className="text-xl font-medium">{userProfile.degree} in {userProfile.field_of_study}</p>
+                                    </div>
+                                )}
+                                {userProfile.target_intake_year && (
+                                    <div>
+                                        <p className="text-sm text-neutral-500 mb-1">Target Intake</p>
+                                        <p className="text-xl font-medium">{userProfile.target_intake_year}</p>
+                                    </div>
+                                )}
+                                {userProfile.preferred_countries && userProfile.preferred_countries.length > 0 && (
+                                    <div>
+                                        <p className="text-sm text-neutral-500 mb-1">Preferred Countries</p>
+                                        <p className="text-xl font-medium">{userProfile.preferred_countries.join(", ")}</p>
+                                    </div>
+                                )}
+                                {userProfile.budget_per_year && userProfile.budget_per_year > 0 && (
+                                    <div>
+                                        <p className="text-sm text-neutral-500 mb-1">Budget</p>
+                                        <p className="text-xl font-medium">${userProfile.budget_per_year.toLocaleString()}/year</p>
+                                    </div>
+                                )}
+                            </div>
+                        </motion.div>
 
-                            {/* SECTION C: Current Stage */}
-                            <StageIndicator currentStage={currentStage} />
-                        </div>
+                        {/* Profile Strength - Qualitative */}
+                        <ErrorBoundary componentName="Profile Strength">
+                            <ProfileStrengthCard email={userProfile.email} />
+                        </ErrorBoundary>
 
-                        {/* Middle Column - Strength & Tasks */}
-                        <div className="lg:col-span-1 space-y-6">
-                            {/* SECTION B: Profile Strength */}
-                            <ErrorBoundary componentName="Profile Strength">
-                                <ProfileStrengthCard email={userProfile.email} />
-                            </ErrorBoundary>
+                        {/* Stage Progress */}
+                        <StageIndicator currentStage={currentStage} />
+                    </div>
 
-                            {/* SECTION D: AI To-Do List */}
-                            <ErrorBoundary componentName="Task List">
-                                <TaskList tasks={todoList ?? []} showStageFilter={false} />
-                            </ErrorBoundary>
-                        </div>
+                    {/* Right Column */}
+                    <div className="space-y-16">
+                        {/* AI Tasks - Editorial Checklist */}
+                        <ErrorBoundary componentName="Task List">
+                            <TaskList tasks={todoList ?? []} showStageFilter={false} />
+                        </ErrorBoundary>
 
-                        {/* Right Column - Universities */}
-                        <div className="lg:col-span-1">
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.6, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-                            >
-                                <div className="flex justify-between items-center mb-6">
-                                    <h2 className="text-2xl font-semibold text-stone-900">
-                                        Recommended Universities
-                                    </h2>
-                                    {recommendations.length > 5 && (
-                                        <Link
-                                            href="/universities"
-                                            className="px-4 py-2 text-sm font-medium text-stone-700 bg-white border border-stone-200 rounded-lg hover:bg-stone-50 hover:border-stone-300 transition-all duration-200"
-                                        >
-                                            View All ({recommendations.length})
-                                        </Link>
-                                    )}
+                        {/* Universities - Minimal Cards */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.6, delay: 0.3 }}
+                        >
+                            <div className="flex items-center justify-between mb-8">
+                                <p className="label-editorial">Recommended Universities</p>
+                                {recommendations.length > 5 && (
+                                    <Link
+                                        href="/universities"
+                                        className="text-sm text-neutral-600 hover:text-neutral-900 transition-colors"
+                                    >
+                                        View All ({recommendations.length}) →
+                                    </Link>
+                                )}
+                            </div>
+
+                            {isLoading && (
+                                <div className="border border-neutral-200 p-16 text-center">
+                                    <div className="w-8 h-8 border-2 border-neutral-200 border-t-neutral-900 rounded-full animate-spin mx-auto mb-4"></div>
+                                    <p className="text-neutral-600">Loading recommendations...</p>
                                 </div>
+                            )}
 
-                                {/* Loading State */}
-                                {isLoading && (
-                                    <div className="bg-white/60 backdrop-blur-sm border border-stone-200/50 rounded-2xl p-12 text-center shadow-lg shadow-stone-200/50">
-                                        <div className="w-12 h-12 border-4 border-stone-200 border-t-stone-900 rounded-full animate-spin mx-auto mb-4"></div>
-                                        <p className="text-stone-600">Finding your perfect university matches...</p>
-                                    </div>
-                                )}
+                            {error && !isLoading && (
+                                <div className="border border-red-200 bg-red-50 p-8 text-center">
+                                    <p className="text-red-900">{error}</p>
+                                </div>
+                            )}
 
-                                {/* Error State */}
-                                {error && !isLoading && (
-                                    <div className="bg-red-50 border border-red-200 rounded-xl p-6">
-                                        <p className="text-red-900 text-center">{error}</p>
-                                    </div>
-                                )}
+                            {!isLoading && !error && recommendations.length > 0 && (
+                                <div className="space-y-4">
+                                    {recommendations.slice(0, 5).map((uni: any, idx: number) => (
+                                        <ErrorBoundary key={uni?.id || idx} componentName="University Card">
+                                            <UniversityCard
+                                                university={uni}
+                                                index={idx}
+                                                showActions={true}
+                                                onLockClick={handleLockClick}
+                                            />
+                                        </ErrorBoundary>
+                                    ))}
+                                </div>
+                            )}
 
-                                {/* Universities List - Top 5 */}
-                                {!isLoading && !error && Array.isArray(recommendations) && recommendations.length > 0 && (
-                                    <div className="space-y-4">
-                                        {recommendations.slice(0, 5).map((uni: any, idx: number) => (
-                                            <ErrorBoundary key={uni?.id || idx} componentName="University Card">
-                                                <UniversityCard
-                                                    university={uni}
-                                                    index={idx}
-                                                    showActions={true}
-                                                    onLockClick={handleLockClick}
-                                                />
-                                            </ErrorBoundary>
-                                        ))}
-                                    </div>
-                                )}
-
-                                {/* Empty State - ONLY if backend returns empty */}
-                                {!isLoading && !error && recommendations.length === 0 && (
-                                    <div className="bg-amber-50 border border-amber-200 rounded-xl p-8 text-center">
-                                        <p className="text-amber-900">
-                                            No matches found. Try adjusting your budget or preferred country.
-                                        </p>
-                                    </div>
-                                )}
-                            </motion.div>
-                        </div>
+                            {!isLoading && !error && recommendations.length === 0 && (
+                                <div className="border border-neutral-200 p-12 text-center">
+                                    <p className="text-neutral-600">No recommendations yet.</p>
+                                </div>
+                            )}
+                        </motion.div>
                     </div>
                 </div>
             </main>
 
-            {/* Lock University Modal */}
             {isLockModalOpen && universityToLock && (
                 <LockUniversityModal
                     university={universityToLock}

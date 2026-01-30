@@ -264,6 +264,7 @@ export default function DashboardPage() {
             {isLockModalOpen && universityToLock && (
                 <LockUniversityModal
                     university={universityToLock}
+                    isOpen={true} // Modal is conditionally rendered, so it's always open when rendered
                     onConfirm={handleLockConfirm}
                     onClose={handleLockCancel}
                 />

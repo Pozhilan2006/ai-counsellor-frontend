@@ -10,7 +10,7 @@ import type { UserProfile } from "@/lib/types";
 
 export default function ProfilePage() {
     const router = useRouter();
-    const { userProfile, setUserProfile, setRecommendations, setCurrentStage } = useAppContext();
+    const { userProfile, setUserProfile, setCurrentStage } = useAppContext();
     const [isEditing, setIsEditing] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     const [isRecalculating, setIsRecalculating] = useState(false);
@@ -79,7 +79,9 @@ export default function ProfilePage() {
             const response = await callCounsellor(profile.email, message);
 
             if (response.universities && response.universities.length > 0) {
-                setRecommendations(response.universities);
+                // DO NOT set recommendations here - let dashboard fetch them
+                // This prevents race condition where profile page overwrites dashboard state
+                console.log(`Profile: Backend returned ${response.universities.length} recommendations`);
                 alert(`✅ Found ${response.universities.length} updated university recommendations!`);
                 router.push("/dashboard");
             }

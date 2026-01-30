@@ -49,14 +49,39 @@ export default function DashboardPage() {
             try {
                 console.log("Dashboard: Fetching university recommendations...");
                 const response = await getRecommendations(userProfile.email);
-                console.log("Dashboard: Recommendations received:", response);
+                console.log("Dashboard: Full API response:", response);
+                console.log("Dashboard: Response type:", typeof response);
+                console.log("Dashboard: Response keys:", Object.keys(response || {}));
 
-                // CRITICAL GUARD: Ensure response has recommendations array
-                if (response && Array.isArray(response.recommendations)) {
-                    setRecommendations(response.recommendations);
+                // CRITICAL: Check actual response structure
+                let universitiesArray: any[] = [];
+
+                if (Array.isArray(response)) {
+                    // Response is directly an array
+                    universitiesArray = response;
+                    console.log("Dashboard: Response is direct array, length:", universitiesArray.length);
+                } else if (response && Array.isArray(response.recommendations)) {
+                    // Response has recommendations key
+                    universitiesArray = response.recommendations;
+                    console.log("Dashboard: Found response.recommendations, length:", universitiesArray.length);
+                } else if (response && Array.isArray(response.universities)) {
+                    // Response has universities key
+                    universitiesArray = response.universities;
+                    console.log("Dashboard: Found response.universities, length:", universitiesArray.length);
+                } else if (response && response.matches) {
+                    // Response has matches object with dream/target/safe
+                    universitiesArray = [
+                        ...(response.matches.dream || []),
+                        ...(response.matches.target || []),
+                        ...(response.matches.safe || [])
+                    ];
+                    console.log("Dashboard: Found response.matches, total length:", universitiesArray.length);
                 } else {
-                    setRecommendations([]);
+                    console.warn("Dashboard: Unknown response structure", response);
                 }
+
+                console.log("Dashboard: Setting recommendations array with length:", universitiesArray.length);
+                setRecommendations(universitiesArray);
 
             } catch (err) {
                 // Display backend error message verbatim

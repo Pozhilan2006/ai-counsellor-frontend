@@ -87,11 +87,13 @@ export default function Home() {
       <Navbar />
 
       {/* HERO SECTION - Marqo Style (Gradient + Info Hierarchy) */}
-      <section className="pt-32 pb-32 md:pt-48 md:pb-48 bg-gradient-to-br from-slate-900 via-emerald-950 to-teal-900 text-white relative overflow-hidden mask-gradient-bottom">
-        {/* Background Shapes with Ambient Motion - Lower Opacity & Slower */}
-        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-emerald-500/10 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2 pointer-events-none animate-float-slow mix-blend-screen opacity-70"></div>
-        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-teal-500/10 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/3 pointer-events-none animate-float-medium mix-blend-screen opacity-60"></div>
-        <div className="absolute top-1/2 left-1/2 w-[400px] h-[400px] bg-blue-500/10 rounded-full blur-[80px] -translate-x-1/2 -translate-y-1/2 pointer-events-none animate-float-fast mix-blend-overlay opacity-50"></div>
+      <section className="pt-32 pb-32 md:pt-40 md:pb-48 bg-gradient-to-br from-slate-900 via-emerald-950 to-teal-900 text-white relative overflow-hidden mask-gradient-bottom">
+
+        {/* Ambient Motion Background - Added Depth Layers */}
+        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-emerald-500/10 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2 pointer-events-none animate-float-slow mix-blend-screen opacity-60 will-change-transform"></div>
+        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-teal-500/10 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/3 pointer-events-none animate-float-medium mix-blend-screen opacity-50 will-change-transform"></div>
+        <div className="absolute top-1/4 left-1/3 w-[300px] h-[300px] bg-indigo-500/10 rounded-full blur-[80px] pointer-events-none animate-float-fast mix-blend-overlay opacity-40 will-change-transform"></div>
+        <div className="absolute bottom-1/4 right-1/3 w-[250px] h-[250px] bg-blue-400/10 rounded-full blur-[60px] pointer-events-none animate-float-slow mix-blend-overlay opacity-30 will-change-transform"></div>
 
         <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center relative z-10">
           <motion.div
@@ -128,22 +130,24 @@ export default function Home() {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
-            className="relative lg:h-[600px] flex items-center justify-center"
+            className="relative lg:h-[600px] flex items-center justify-center perspective-1000"
           >
             {/* Main Card - Profile Strength */}
             <motion.div
-              animate={{ y: [0, -15, 0] }}
+              animate={{ y: [0, -15, 0], rotate: [-2, -1, -2] }}
               transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute top-10 left-10 md:left-20 bg-white/95 backdrop-blur shadow-2xl rounded-2xl p-2 w-[340px] z-20 border border-white/10 transform -rotate-2 hover:rotate-0 transition-transform duration-500"
+              whileHover={{ y: -20, rotate: 0, scale: 1.02 }}
+              className="absolute top-10 left-10 md:left-20 bg-white/95 backdrop-blur shadow-2xl rounded-2xl p-2 w-[340px] z-20 border border-white/10 transform transition-transform duration-500"
             >
               <ProfileStrengthView data={DUMMY_PROFILE_STRENGTH} isLoading={false} error={null} />
             </motion.div>
 
             {/* Secondary Card - Top Match */}
             <motion.div
-              animate={{ y: [0, 12, 0] }}
+              animate={{ y: [0, 12, 0], rotate: [2, 3, 2] }}
               transition={{ duration: 9, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
-              className="absolute bottom-20 right-10 md:right-20 bg-white/95 backdrop-blur shadow-2xl rounded-2xl w-[320px] z-10 p-2 transform rotate-2 hover:rotate-0 transition-transform duration-500"
+              whileHover={{ y: 5, rotate: 0, scale: 1.02 }}
+              className="absolute bottom-20 right-10 md:right-20 bg-white/95 backdrop-blur shadow-2xl rounded-2xl w-[320px] z-10 p-2 transform transition-transform duration-500"
             >
               <div className="p-4">
                 <div className="flex justify-between items-start mb-4">

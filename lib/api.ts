@@ -146,19 +146,31 @@ export async function getShortlist(email: string) {
 
   console.log("API CALL: GET /shortlist", { email });
 
-  const res = await fetch(`${baseUrl}/shortlist?email=${encodeURIComponent(email)}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
+  try {
+    const res = await fetch(`${baseUrl}/shortlist?email=${encodeURIComponent(email)}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
-  if (!res.ok) {
-    const errorData = await res.json().catch(() => ({ message: "Failed to fetch shortlist" }));
-    throw new Error(errorData.message || errorData.error || "Failed to fetch shortlist");
+    // Treat 404 as empty list
+    if (res.status === 404) {
+      console.log("Shortlist: 404 treated as empty list");
+      return { shortlist: [] };
+    }
+
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({ message: "Failed to fetch shortlist" }));
+      throw new Error(errorData.message || errorData.error || "Failed to fetch shortlist");
+    }
+
+    return res.json();
+  } catch (err) {
+    // Treat all errors as empty list for graceful degradation
+    console.warn("Shortlist fetch failed, returning empty list:", err);
+    return { shortlist: [] };
   }
-
-  return res.json();
 }
 
 // ============================================
@@ -214,19 +226,31 @@ export async function getTasks(email: string) {
 
   console.log("API CALL: GET /tasks", { email });
 
-  const res = await fetch(`${baseUrl}/tasks?email=${encodeURIComponent(email)}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
+  try {
+    const res = await fetch(`${baseUrl}/tasks?email=${encodeURIComponent(email)}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
-  if (!res.ok) {
-    const errorData = await res.json().catch(() => ({ message: "Failed to fetch tasks" }));
-    throw new Error(errorData.message || errorData.error || "Failed to fetch tasks");
+    // Treat 404 as empty list
+    if (res.status === 404) {
+      console.log("Tasks: 404 treated as empty list");
+      return { tasks: [] };
+    }
+
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({ message: "Failed to fetch tasks" }));
+      throw new Error(errorData.message || errorData.error || "Failed to fetch tasks");
+    }
+
+    return res.json();
+  } catch (err) {
+    // Treat all errors as empty list for graceful degradation
+    console.warn("Tasks fetch failed, returning empty list:", err);
+    return { tasks: [] };
   }
-
-  return res.json();
 }
 
 export async function completeTaskAPI(email: string, taskId: string) {

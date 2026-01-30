@@ -16,6 +16,12 @@ export default function CounsellorPage() {
     const [error, setError] = useState<string | null>(null);
     const [conversationHistory, setConversationHistory] = useState<Array<{ role: "user" | "assistant"; message: string; response?: any }>>([]);
 
+    const quickActions = [
+        "Recommend universities for me",
+        "Analyze my profile strength",
+        "What should I do next?",
+    ];
+
     useEffect(() => {
         if (!userProfile) {
             router.push("/onboarding");
@@ -56,16 +62,23 @@ export default function CounsellorPage() {
             }
 
         } catch (err) {
-            // Display backend error message verbatim
-            const errorMessage = err instanceof Error ? err.message : "Something went wrong. Try again.";
-            console.error("Counsellor error:", errorMessage);
-            setError(errorMessage);
+            // Show AI fallback message instead of error
+            const fallbackMessage = "I'm having trouble connecting right now. Please try again in a moment, or try rephrasing your question.";
+            console.error("Counsellor error:", err);
 
-            // Remove the user message from history on error
-            setConversationHistory(prev => prev.slice(0, -1));
+            // Add fallback as AI response
+            setConversationHistory(prev => [...prev, {
+                role: "assistant",
+                message: fallbackMessage,
+                response: null
+            }]);
         } finally {
             setIsLoading(false);
         }
+    };
+
+    const handleQuickAction = (action: string) => {
+        setQuestion(action);
     };
 
     return (
@@ -114,6 +127,22 @@ export default function CounsellorPage() {
                             onSubmit={handleSubmit}
                             className="bg-white/60 backdrop-blur-sm border border-stone-200/50 rounded-2xl p-6 md:p-8 shadow-lg shadow-stone-200/50 mb-8"
                         >
+                            {/* Quick Action Chips */}
+                            {conversationHistory.length === 0 && (
+                                <div className="mb-4 flex flex-wrap gap-2">
+                                    {quickActions.map((action, idx) => (
+                                        <button
+                                            key={idx}
+                                            type="button"
+                                            onClick={() => handleQuickAction(action)}
+                                            className="px-4 py-2 text-sm font-medium text-stone-700 bg-white border border-stone-200 rounded-full hover:bg-stone-50 hover:border-stone-300 transition-all duration-200"
+                                        >
+                                            {action}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+
                             <div className="flex flex-col gap-4">
                                 <textarea
                                     value={question}
@@ -164,15 +193,15 @@ export default function CounsellorPage() {
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ duration: 0.4, delay: idx * 0.05 }}
                                         className={`${entry.role === "user"
-                                                ? "bg-stone-100/60 border-stone-200/50"
-                                                : "bg-white/60 border-stone-200/50"
+                                            ? "bg-stone-100/60 border-stone-200/50"
+                                            : "bg-white/60 border-stone-200/50"
                                             } backdrop-blur-sm border rounded-2xl p-6 shadow-lg shadow-stone-200/50`}
                                     >
                                         <div className="flex items-start gap-4">
                                             <div
                                                 className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${entry.role === "user"
-                                                        ? "bg-stone-600"
-                                                        : "bg-stone-900"
+                                                    ? "bg-stone-600"
+                                                    : "bg-stone-900"
                                                     }`}
                                             >
                                                 <span className="text-white text-sm font-semibold">
@@ -209,10 +238,10 @@ export default function CounsellorPage() {
                                                                         {uni.competitiveness && (
                                                                             <span
                                                                                 className={`px-3 py-1 rounded-full text-xs font-semibold ${uni.competitiveness === "High"
-                                                                                        ? "bg-violet-100 border border-violet-200 text-violet-900"
-                                                                                        : uni.competitiveness === "Medium"
-                                                                                            ? "bg-blue-100 border border-blue-200 text-blue-900"
-                                                                                            : "bg-emerald-100 border border-emerald-200 text-emerald-900"
+                                                                                    ? "bg-violet-100 border border-violet-200 text-violet-900"
+                                                                                    : uni.competitiveness === "Medium"
+                                                                                        ? "bg-blue-100 border border-blue-200 text-blue-900"
+                                                                                        : "bg-emerald-100 border border-emerald-200 text-emerald-900"
                                                                                     }`}
                                                                             >
                                                                                 {uni.competitiveness}

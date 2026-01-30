@@ -89,6 +89,7 @@ export interface TodoItem {
   id: string;
   task: string;
   description?: string;
+  reason?: string; // AI generated reason for this task
   priority: "High" | "Medium" | "Low";
   completed: boolean;
   stage: Stage;

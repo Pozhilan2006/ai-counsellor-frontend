@@ -10,7 +10,7 @@ export default function Sidebar() {
 
     const navItems = [
         { name: "Dashboard", path: "/dashboard", icon: "📊" },
-        { name: "Universities", path: "/shortlist", icon: "🎓" },
+        { name: "Universities", path: "/universities", icon: "🎓" },
         { name: "AI Counsellor", path: "/counsellor", icon: "💬" },
         { name: "Tasks", path: "/application", icon: "✅" },
     ];
@@ -34,8 +34,8 @@ export default function Sidebar() {
                         key={item.path}
                         href={item.path}
                         className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${isActive(item.path)
-                                ? "bg-stone-900 text-white shadow-md"
-                                : "text-stone-700 hover:bg-stone-100 hover:text-stone-900"
+                            ? "bg-stone-900 text-white shadow-md"
+                            : "text-stone-700 hover:bg-stone-100 hover:text-stone-900"
                             }`}
                     >
                         <span className="text-xl">{item.icon}</span>

@@ -191,9 +191,19 @@ export default function DashboardPage() {
                             transition={{ duration: 0.6, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
                             className="mb-8"
                         >
-                            <h2 className="text-2xl font-semibold text-stone-900 mb-6">
-                                University Matches {recommendations.length > 0 && `(${recommendations.length})`}
-                            </h2>
+                            <div className="flex justify-between items-center mb-6">
+                                <h2 className="text-2xl font-semibold text-stone-900">
+                                    Recommended Universities
+                                </h2>
+                                {recommendations.length > 5 && (
+                                    <Link
+                                        href="/universities"
+                                        className="px-4 py-2 text-sm font-medium text-stone-700 bg-white border border-stone-200 rounded-lg hover:bg-stone-50 hover:border-stone-300 transition-all duration-200"
+                                    >
+                                        View All ({recommendations.length})
+                                    </Link>
+                                )}
+                            </div>
 
                             {/* Loading State */}
                             {isLoading && (
@@ -210,10 +220,10 @@ export default function DashboardPage() {
                                 </div>
                             )}
 
-                            {/* Universities List */}
+                            {/* Universities List - Top 5 */}
                             {!isLoading && !error && recommendations.length > 0 && (
                                 <div className="space-y-4">
-                                    {recommendations.map((uni: any, idx: number) => (
+                                    {recommendations.slice(0, 5).map((uni: any, idx: number) => (
                                         <UniversityCard
                                             key={uni.id || idx}
                                             university={uni}

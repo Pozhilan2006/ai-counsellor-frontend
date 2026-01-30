@@ -10,7 +10,7 @@ interface TaskListProps {
 }
 
 export default function TaskList({ tasks, showStageFilter = false }: TaskListProps) {
-    const { completeTask, removeTask } = useAppContext();
+    const { completeTask, lockedUniversity } = useAppContext();
 
     const handleToggleComplete = (taskId: string) => {
         completeTask(taskId);
@@ -44,15 +44,32 @@ export default function TaskList({ tasks, showStageFilter = false }: TaskListPro
         }
     };
 
-    if (tasks.length === 0) {
+    // Show message if no university is locked
+    if (!lockedUniversity) {
         return (
             <div className="bg-white/60 backdrop-blur-sm border border-stone-200/50 rounded-2xl p-8 shadow-lg shadow-stone-200/50">
                 <h2 className="text-xl font-semibold text-stone-900 mb-6">Your Tasks</h2>
+                <div className="bg-amber-50 border border-amber-200 rounded-xl p-6 text-center">
+                    <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center mx-auto mb-3">
+                        <span className="text-2xl">🔒</span>
+                    </div>
+                    <p className="text-amber-900 font-medium mb-1">Tasks unlock after you finalize a university</p>
+                    <p className="text-sm text-amber-700">Lock a university from your shortlist to see your personalized tasks</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (tasks.length === 0) {
+        return (
+            <div className="bg-white/60 backdrop-blur-sm border border-stone-200/50 rounded-2xl p-8 shadow-lg shadow-stone-200/50">
+                <h2 className="text-xl font-semibold text-stone-900 mb-2">Your Tasks</h2>
+                <p className="text-sm text-stone-600 mb-6">for {lockedUniversity.name}</p>
                 <div className="text-center py-8 text-stone-600">
                     <div className="w-16 h-16 rounded-full bg-stone-100 flex items-center justify-center mx-auto mb-4">
                         <span className="text-3xl">✅</span>
                     </div>
-                    <p className="text-sm">No tasks yet. Talk to the AI Counsellor to get personalized guidance.</p>
+                    <p className="text-sm">No tasks yet. Check back soon for personalized guidance!</p>
                 </div>
             </div>
         );
@@ -69,8 +86,11 @@ export default function TaskList({ tasks, showStageFilter = false }: TaskListPro
             transition={{ duration: 0.6, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
             className="bg-white/60 backdrop-blur-sm border border-stone-200/50 rounded-2xl p-8 shadow-lg shadow-stone-200/50"
         >
-            <div className="flex items-center justify-between mb-6">
+            <div className="mb-6">
                 <h2 className="text-xl font-semibold text-stone-900">Your Tasks</h2>
+                <p className="text-sm text-stone-600">for {lockedUniversity.name}</p>
+            </div>
+            <div className="flex items-center justify-between mb-6">
                 <span className="text-sm text-stone-600">
                     {pendingTasks.length} pending, {completedTasks.length} completed
                 </span>

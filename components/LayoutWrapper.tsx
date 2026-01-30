@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import Sidebar from "@/components/Sidebar";
+import ShortlistFloatingButton from "@/components/ShortlistFloatingButton";
 
 export default function LayoutWrapper({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
@@ -17,6 +18,7 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
     return (
         <div className="flex min-h-screen">
             <Sidebar />
+            <ShortlistFloatingButton />
             <main className="flex-1 ml-60">
                 {children}
             </main>

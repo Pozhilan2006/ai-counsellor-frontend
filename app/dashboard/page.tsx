@@ -182,7 +182,6 @@ export default function DashboardPage() {
                                 missingFields={userProfile.missing_fields}
                             />
                             <TaskList tasks={todoList} showStageFilter={false} />
-                            <TaskList tasks={todoList} showStageFilter={false} />
                         </div>
 
                         {/* University Matches Section */}

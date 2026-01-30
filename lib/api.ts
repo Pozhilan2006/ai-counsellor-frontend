@@ -97,6 +97,29 @@ export async function submitOnboarding(profile: any, finalSubmit: boolean = true
 }
 
 // ============================================
+// PROFILE STRENGTH
+// ============================================
+export async function getProfileStrength(email: string) {
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+  console.log("API CALL: GET /profile/strength", { email });
+
+  const res = await fetch(`${baseUrl}/profile/strength?email=${encodeURIComponent(email)}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({ message: "Failed to fetch profile strength" }));
+    throw new Error(errorData.message || errorData.error || "Failed to fetch profile strength");
+  }
+
+  return res.json();
+}
+
+// ============================================
 // SHORTLISTING
 // ============================================
 export async function addToShortlist(email: string, universityId: number) {

@@ -5,9 +5,11 @@ import type { ProfileStrength } from "@/lib/types";
 
 interface ProfileStrengthCardProps {
     strength: ProfileStrength | null;
+    completionScore?: number;
+    missingFields?: string[];
 }
 
-export default function ProfileStrengthCard({ strength }: ProfileStrengthCardProps) {
+export default function ProfileStrengthCard({ strength, completionScore, missingFields }: ProfileStrengthCardProps) {
     if (!strength) {
         return (
             <div className="bg-white/60 backdrop-blur-sm border border-stone-200/50 rounded-2xl p-8 shadow-lg shadow-stone-200/50">
@@ -58,6 +60,42 @@ export default function ProfileStrengthCard({ strength }: ProfileStrengthCardPro
         >
             <h2 className="text-xl font-semibold text-stone-900 mb-6">Profile Strength</h2>
 
+            {/* Completion Score */}
+            {completionScore !== undefined && (
+                <div className="mb-6 pb-6 border-b border-stone-200">
+                    <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm font-medium text-stone-700">Profile Completeness</span>
+                        <span className="text-lg font-semibold text-stone-900">{completionScore}%</span>
+                    </div>
+                    <div className="w-full bg-stone-200 rounded-full h-3">
+                        <div
+                            className={`h-3 rounded-full transition-all duration-500 ${completionScore >= 80
+                                    ? "bg-emerald-500"
+                                    : completionScore >= 50
+                                        ? "bg-amber-500"
+                                        : "bg-red-500"
+                                }`}
+                            style={{ width: `${completionScore}%` }}
+                        ></div>
+                    </div>
+                    {missingFields && missingFields.length > 0 && (
+                        <div className="mt-3">
+                            <p className="text-xs font-medium text-stone-600 mb-2">Missing:</p>
+                            <div className="flex flex-wrap gap-2">
+                                {missingFields.map((field) => (
+                                    <span
+                                        key={field}
+                                        className="px-2 py-1 bg-amber-50 border border-amber-200 text-amber-700 rounded text-xs"
+                                    >
+                                        {field}
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </div>
+            )}
+
             <div className="space-y-4">
                 {/* Academics */}
                 <div>
@@ -74,10 +112,10 @@ export default function ProfileStrengthCard({ strength }: ProfileStrengthCardPro
                     <div className="w-full bg-stone-200 rounded-full h-2">
                         <div
                             className={`h-2 rounded-full transition-all duration-500 ${strength.academics === "Strong"
-                                    ? "bg-emerald-500 w-full"
-                                    : strength.academics === "Average"
-                                        ? "bg-amber-500 w-2/3"
-                                        : "bg-red-500 w-1/3"
+                                ? "bg-emerald-500 w-full"
+                                : strength.academics === "Average"
+                                    ? "bg-amber-500 w-2/3"
+                                    : "bg-red-500 w-1/3"
                                 }`}
                         ></div>
                     </div>
@@ -98,10 +136,10 @@ export default function ProfileStrengthCard({ strength }: ProfileStrengthCardPro
                     <div className="w-full bg-stone-200 rounded-full h-2">
                         <div
                             className={`h-2 rounded-full transition-all duration-500 ${strength.exams === "Completed"
-                                    ? "bg-emerald-500 w-full"
-                                    : strength.exams === "In Progress"
-                                        ? "bg-blue-500 w-2/3"
-                                        : "bg-stone-400 w-1/3"
+                                ? "bg-emerald-500 w-full"
+                                : strength.exams === "In Progress"
+                                    ? "bg-blue-500 w-2/3"
+                                    : "bg-stone-400 w-1/3"
                                 }`}
                         ></div>
                     </div>
@@ -122,10 +160,10 @@ export default function ProfileStrengthCard({ strength }: ProfileStrengthCardPro
                     <div className="w-full bg-stone-200 rounded-full h-2">
                         <div
                             className={`h-2 rounded-full transition-all duration-500 ${strength.sop === "Ready"
-                                    ? "bg-emerald-500 w-full"
-                                    : strength.sop === "Draft"
-                                        ? "bg-amber-500 w-2/3"
-                                        : "bg-stone-400 w-1/3"
+                                ? "bg-emerald-500 w-full"
+                                : strength.sop === "Draft"
+                                    ? "bg-amber-500 w-2/3"
+                                    : "bg-stone-400 w-1/3"
                                 }`}
                         ></div>
                     </div>

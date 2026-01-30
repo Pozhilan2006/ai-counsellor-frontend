@@ -176,7 +176,12 @@ export default function DashboardPage() {
 
                         {/* Profile Strength & Tasks Grid */}
                         <div className="grid md:grid-cols-2 gap-6 mb-8">
-                            <ProfileStrengthCard strength={profileStrength} />
+                            <ProfileStrengthCard
+                                strength={profileStrength}
+                                completionScore={userProfile.completion_score}
+                                missingFields={userProfile.missing_fields}
+                            />
+                            <TaskList tasks={todoList} showStageFilter={false} />
                             <TaskList tasks={todoList} showStageFilter={false} />
                         </div>
 

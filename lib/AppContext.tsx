@@ -116,6 +116,41 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
         localStorage.setItem("currentStage", currentStage);
     }, [currentStage]);
 
+    // Backend Sync Effect (fetch stage, shortlist, tasks)
+    useEffect(() => {
+        const syncWithBackend = async () => {
+            if (!userProfile?.email) return;
+
+            try {
+                // Fetch user stage from backend
+                const { getUserStage } = await import("./api");
+                const stageData = await getUserStage(userProfile.email);
+                if (stageData.current_stage) {
+                    setCurrentStage(stageData.current_stage);
+                }
+
+                // Fetch shortlist from backend
+                const { getShortlist } = await import("./api");
+                const shortlistData = await getShortlist(userProfile.email);
+                if (shortlistData.shortlisted) {
+                    setShortlistedUniversities(shortlistData.shortlisted);
+                }
+
+                // Fetch tasks from backend
+                const { getTasks } = await import("./api");
+                const tasksData = await getTasks(userProfile.email);
+                if (tasksData.tasks) {
+                    setTodoList(tasksData.tasks);
+                }
+            } catch (error) {
+                console.error("Failed to sync with backend on mount:", error);
+                // Continue with local state if backend fails
+            }
+        };
+
+        syncWithBackend();
+    }, [userProfile?.email]);
+
     // ============================================
     // PROFILE METHODS
     // ============================================
@@ -142,9 +177,22 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
     // ============================================
     // SHORTLIST METHODS
     // ============================================
-    const addToShortlist = (university: University) => {
+    const addToShortlist = async (university: University) => {
         if (!shortlistedUniversities.find((u) => u.id === university.id)) {
+            // Optimistic update
             setShortlistedUniversities([...shortlistedUniversities, university]);
+
+            // Sync with backend
+            if (userProfile?.email) {
+                try {
+                    const { addToShortlist: addToShortlistAPI } = await import("./api");
+                    await addToShortlistAPI(userProfile.email, university.id);
+                } catch (error) {
+                    console.error("Failed to sync shortlist with backend:", error);
+                    // Rollback on error
+                    setShortlistedUniversities(shortlistedUniversities.filter((u) => u.id !== university.id));
+                }
+            }
 
             // Auto-progress to SHORTLIST stage if not already there
             if (currentStage === "DISCOVERY") {
@@ -153,8 +201,21 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
         }
     };
 
-    const removeFromShortlist = (universityId: number) => {
+    const removeFromShortlist = async (universityId: number) => {
+        const previousShortlist = [...shortlistedUniversities];
         setShortlistedUniversities(shortlistedUniversities.filter((u) => u.id !== universityId));
+
+        // Sync with backend
+        if (userProfile?.email) {
+            try {
+                const { removeFromShortlist: removeFromShortlistAPI } = await import("./api");
+                await removeFromShortlistAPI(userProfile.email, universityId);
+            } catch (error) {
+                console.error("Failed to sync shortlist removal with backend:", error);
+                // Rollback on error
+                setShortlistedUniversities(previousShortlist);
+            }
+        }
     };
 
     const isShortlisted = (universityId: number): boolean => {
@@ -164,15 +225,47 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
     // ============================================
     // LOCKING METHODS
     // ============================================
-    const lockUniversity = (university: University) => {
+    const lockUniversity = async (university: University) => {
         setLockedUniversity(university);
         setCurrentStage("LOCKED");
+
+        // Sync with backend
+        if (userProfile?.email) {
+            try {
+                const { lockUniversityAPI } = await import("./api");
+                const response = await lockUniversityAPI(userProfile.email, university.id);
+                if (response.new_stage) {
+                    setCurrentStage(response.new_stage);
+                }
+            } catch (error) {
+                console.error("Failed to sync lock with backend:", error);
+                // Rollback on error
+                setLockedUniversity(null);
+                setCurrentStage("SHORTLIST");
+            }
+        }
     };
 
-    const unlockUniversity = () => {
+    const unlockUniversity = async () => {
+        const previousLocked = lockedUniversity;
         setLockedUniversity(null);
-        // Revert to SHORTLIST stage
         setCurrentStage("SHORTLIST");
+
+        // Sync with backend
+        if (userProfile?.email) {
+            try {
+                const { unlockUniversityAPI } = await import("./api");
+                const response = await unlockUniversityAPI(userProfile.email);
+                if (response.new_stage) {
+                    setCurrentStage(response.new_stage);
+                }
+            } catch (error) {
+                console.error("Failed to sync unlock with backend:", error);
+                // Rollback on error
+                setLockedUniversity(previousLocked);
+                setCurrentStage("LOCKED");
+            }
+        }
     };
 
     // ============================================
@@ -187,12 +280,28 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
         setTodoList([...todoList, newTask]);
     };
 
-    const completeTask = (taskId: string) => {
+    const completeTask = async (taskId: string) => {
         setTodoList(
             todoList.map((task) =>
                 task.id === taskId ? { ...task, completed: true } : task
             )
         );
+
+        // Sync with backend
+        if (userProfile?.email) {
+            try {
+                const { completeTaskAPI } = await import("./api");
+                await completeTaskAPI(userProfile.email, taskId);
+            } catch (error) {
+                console.error("Failed to sync task completion with backend:", error);
+                // Rollback on error
+                setTodoList(
+                    todoList.map((task) =>
+                        task.id === taskId ? { ...task, completed: false } : task
+                    )
+                );
+            }
+        }
     };
 
     const removeTask = (taskId: string) => {

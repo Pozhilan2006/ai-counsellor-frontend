@@ -40,6 +40,8 @@ export interface UserProfile {
   // Metadata
   profile_complete: boolean;
   profile_strength?: ProfileStrength;
+  completion_score?: number; // 0-100
+  missing_fields?: string[]; // List of incomplete fields
 }
 
 // ============================================
@@ -72,6 +74,9 @@ export interface University {
   acceptance_chance?: number; // 0-100
   why_it_fits?: string;
   risks?: string;
+
+  // Recommendation Metadata
+  match_reason?: string; // Why this university was recommended
 
   // Additional fields from backend
   [key: string]: any;

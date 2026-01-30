@@ -87,15 +87,18 @@ export default function Home() {
       <Navbar />
 
       {/* HERO SECTION - Marqo Style (Gradient + Info Hierarchy) */}
-      <section className="pt-32 pb-32 md:pt-40 md:pb-48 bg-gradient-to-br from-slate-900 via-emerald-950 to-teal-900 text-white relative overflow-hidden mask-gradient-bottom">
+      <section className="pt-32 pb-32 md:pt-40 md:pb-48 bg-gradient-to-br from-slate-900 via-emerald-950 to-teal-900 text-white relative overflow-hidden">
 
         {/* Ambient Motion Background - Added Depth Layers */}
-        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-emerald-500/10 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2 pointer-events-none animate-float-slow mix-blend-screen opacity-60 will-change-transform"></div>
-        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-teal-500/10 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/3 pointer-events-none animate-float-medium mix-blend-screen opacity-50 will-change-transform"></div>
-        <div className="absolute top-1/4 left-1/3 w-[300px] h-[300px] bg-indigo-500/10 rounded-full blur-[80px] pointer-events-none animate-float-fast mix-blend-overlay opacity-40 will-change-transform"></div>
-        <div className="absolute bottom-1/4 right-1/3 w-[250px] h-[250px] bg-blue-400/10 rounded-full blur-[60px] pointer-events-none animate-float-slow mix-blend-overlay opacity-30 will-change-transform"></div>
+        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-emerald-500/10 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2 pointer-events-none animate-float-slow mix-blend-screen opacity-20 will-change-transform"></div>
+        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-teal-500/10 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/3 pointer-events-none animate-float-medium mix-blend-screen opacity-10 will-change-transform"></div>
+        <div className="absolute top-1/4 left-1/3 w-[300px] h-[300px] bg-indigo-500/10 rounded-full blur-[80px] pointer-events-none animate-float-fast mix-blend-overlay opacity-10 will-change-transform"></div>
+        <div className="absolute bottom-1/4 right-1/3 w-[250px] h-[250px] bg-blue-400/10 rounded-full blur-[60px] pointer-events-none animate-float-slow mix-blend-overlay opacity-10 will-change-transform"></div>
 
-        <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center relative z-10">
+        {/* Gradient Blend Overlay - Seamless Transition to Next Section */}
+        <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-slate-50 to-transparent z-10 pointer-events-none"></div>
+
+        <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center relative z-20">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}

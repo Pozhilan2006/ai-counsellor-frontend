@@ -95,19 +95,19 @@
     -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
   }
 
-  /* Optimized Ambient Motion Animations */
+  /* Optimized Ambient Motion Animations (Slower & Smoother) */
   .animate-float-slow {
-    animation: float 25s ease-in-out infinite alternate;
+    animation: float 40s ease-in-out infinite alternate;
     will-change: transform;
   }
 
   .animate-float-medium {
-    animation: float 18s ease-in-out infinite alternate-reverse;
+    animation: float 30s ease-in-out infinite alternate-reverse;
     will-change: transform;
   }
 
   .animate-float-fast {
-    animation: float 12s ease-in-out infinite alternate;
+    animation: float 20s ease-in-out infinite alternate;
     will-change: transform;
   }
 }

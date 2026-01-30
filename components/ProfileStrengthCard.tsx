@@ -55,8 +55,9 @@ export default function ProfileStrengthCard({ email }: ProfileStrengthCardProps)
         }
     }, [email]);
 
-    const getStatusColor = (status: string) => {
-        switch (status.toLowerCase()) {
+    const getStatusColor = (status?: string) => {
+        const statusLower = status?.toLowerCase() ?? "unknown";
+        switch (statusLower) {
             case "strong":
             case "completed":
             case "ready":
@@ -75,10 +76,11 @@ export default function ProfileStrengthCard({ email }: ProfileStrengthCardProps)
         }
     };
 
-    const getProgressWidth = (status: string, score?: number) => {
+    const getProgressWidth = (status?: string, score?: number) => {
         if (score !== undefined) return `${score}%`;
 
-        switch (status.toLowerCase()) {
+        const statusLower = status?.toLowerCase() ?? "unknown";
+        switch (statusLower) {
             case "strong":
             case "completed":
             case "ready":
@@ -97,8 +99,9 @@ export default function ProfileStrengthCard({ email }: ProfileStrengthCardProps)
         }
     };
 
-    const getProgressColor = (status: string) => {
-        switch (status.toLowerCase()) {
+    const getProgressColor = (status?: string) => {
+        const statusLower = status?.toLowerCase() ?? "unknown";
+        switch (statusLower) {
             case "strong":
             case "completed":
             case "ready":
@@ -153,22 +156,22 @@ export default function ProfileStrengthCard({ email }: ProfileStrengthCardProps)
             <div className="mb-6 pb-6 border-b border-stone-200">
                 <div className="flex items-center justify-between mb-2">
                     <span className="text-sm font-medium text-stone-700">Overall Completeness</span>
-                    <span className="text-2xl font-semibold text-stone-900">{strengthData.completion_score}%</span>
+                    <span className="text-2xl font-semibold text-stone-900">{strengthData?.completion_score ?? 0}%</span>
                 </div>
                 <div className="w-full bg-stone-200 rounded-full h-4 overflow-hidden">
                     <motion.div
                         initial={{ width: 0 }}
-                        animate={{ width: `${strengthData.completion_score}%` }}
+                        animate={{ width: `${strengthData?.completion_score ?? 0}%` }}
                         transition={{ duration: 1, ease: "easeOut" }}
-                        className={`h-4 rounded-full ${strengthData.completion_score >= 80
+                        className={`h-4 rounded-full ${(strengthData?.completion_score ?? 0) >= 80
                                 ? "bg-emerald-500"
-                                : strengthData.completion_score >= 50
+                                : (strengthData?.completion_score ?? 0) >= 50
                                     ? "bg-amber-500"
                                     : "bg-red-500"
                             }`}
                     ></motion.div>
                 </div>
-                {strengthData.missing_fields && strengthData.missing_fields.length > 0 && (
+                {strengthData?.missing_fields && strengthData.missing_fields.length > 0 && (
                     <div className="mt-3">
                         <p className="text-xs font-medium text-stone-600 mb-2">Missing:</p>
                         <div className="flex flex-wrap gap-2">
@@ -192,18 +195,18 @@ export default function ProfileStrengthCard({ email }: ProfileStrengthCardProps)
                         <span className="text-sm font-medium text-stone-700">Academics</span>
                         <span
                             className={`px-3 py-1 rounded-full text-xs font-semibold border ${getStatusColor(
-                                strengthData.academics.status
+                                strengthData?.academics?.status
                             )}`}
                         >
-                            {strengthData.academics.status}
+                            {strengthData?.academics?.status ?? "Unknown"}
                         </span>
                     </div>
                     <div className="w-full bg-stone-200 rounded-full h-2">
                         <motion.div
                             initial={{ width: 0 }}
-                            animate={{ width: getProgressWidth(strengthData.academics.status, strengthData.academics.score) }}
+                            animate={{ width: getProgressWidth(strengthData?.academics?.status, strengthData?.academics?.score) }}
                             transition={{ duration: 0.8, delay: 0.1 }}
-                            className={`h-2 rounded-full ${getProgressColor(strengthData.academics.status)}`}
+                            className={`h-2 rounded-full ${getProgressColor(strengthData?.academics?.status)}`}
                         ></motion.div>
                     </div>
                 </div>
@@ -214,18 +217,18 @@ export default function ProfileStrengthCard({ email }: ProfileStrengthCardProps)
                         <span className="text-sm font-medium text-stone-700">Exams</span>
                         <span
                             className={`px-3 py-1 rounded-full text-xs font-semibold border ${getStatusColor(
-                                strengthData.exams.status
+                                strengthData?.exams?.status
                             )}`}
                         >
-                            {strengthData.exams.status}
+                            {strengthData?.exams?.status ?? "Unknown"}
                         </span>
                     </div>
                     <div className="w-full bg-stone-200 rounded-full h-2">
                         <motion.div
                             initial={{ width: 0 }}
-                            animate={{ width: getProgressWidth(strengthData.exams.status, strengthData.exams.score) }}
+                            animate={{ width: getProgressWidth(strengthData?.exams?.status, strengthData?.exams?.score) }}
                             transition={{ duration: 0.8, delay: 0.2 }}
-                            className={`h-2 rounded-full ${getProgressColor(strengthData.exams.status)}`}
+                            className={`h-2 rounded-full ${getProgressColor(strengthData?.exams?.status)}`}
                         ></motion.div>
                     </div>
                 </div>
@@ -236,18 +239,18 @@ export default function ProfileStrengthCard({ email }: ProfileStrengthCardProps)
                         <span className="text-sm font-medium text-stone-700">Statement of Purpose</span>
                         <span
                             className={`px-3 py-1 rounded-full text-xs font-semibold border ${getStatusColor(
-                                strengthData.sop.status
+                                strengthData?.sop?.status
                             )}`}
                         >
-                            {strengthData.sop.status}
+                            {strengthData?.sop?.status ?? "Unknown"}
                         </span>
                     </div>
                     <div className="w-full bg-stone-200 rounded-full h-2">
                         <motion.div
                             initial={{ width: 0 }}
-                            animate={{ width: getProgressWidth(strengthData.sop.status, strengthData.sop.score) }}
+                            animate={{ width: getProgressWidth(strengthData?.sop?.status, strengthData?.sop?.score) }}
                             transition={{ duration: 0.8, delay: 0.3 }}
-                            className={`h-2 rounded-full ${getProgressColor(strengthData.sop.status)}`}
+                            className={`h-2 rounded-full ${getProgressColor(strengthData?.sop?.status)}`}
                         ></motion.div>
                     </div>
                 </div>
@@ -258,18 +261,18 @@ export default function ProfileStrengthCard({ email }: ProfileStrengthCardProps)
                         <span className="text-sm font-medium text-stone-700">Documents</span>
                         <span
                             className={`px-3 py-1 rounded-full text-xs font-semibold border ${getStatusColor(
-                                strengthData.documents.status
+                                strengthData?.documents?.status
                             )}`}
                         >
-                            {strengthData.documents.status}
+                            {strengthData?.documents?.status ?? "Unknown"}
                         </span>
                     </div>
                     <div className="w-full bg-stone-200 rounded-full h-2">
                         <motion.div
                             initial={{ width: 0 }}
-                            animate={{ width: getProgressWidth(strengthData.documents.status, strengthData.documents.score) }}
+                            animate={{ width: getProgressWidth(strengthData?.documents?.status, strengthData?.documents?.score) }}
                             transition={{ duration: 0.8, delay: 0.4 }}
-                            className={`h-2 rounded-full ${getProgressColor(strengthData.documents.status)}`}
+                            className={`h-2 rounded-full ${getProgressColor(strengthData?.documents?.status)}`}
                         ></motion.div>
                     </div>
                 </div>
@@ -294,9 +297,9 @@ export default function ProfileStrengthCard({ email }: ProfileStrengthCardProps)
             {/* Overall Assessment */}
             <div className="mt-6 pt-6 border-t border-stone-200">
                 <p className="text-sm text-stone-600">
-                    {strengthData.completion_score >= 80
+                    {(strengthData?.completion_score ?? 0) >= 80
                         ? "🎉 Your profile is strong! You're well-prepared for applications."
-                        : strengthData.completion_score >= 50
+                        : (strengthData?.completion_score ?? 0) >= 50
                             ? "📈 You're making good progress. Keep working on the remaining items."
                             : "💡 Focus on strengthening your profile before applying."}
                 </p>

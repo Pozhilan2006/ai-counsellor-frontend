@@ -16,21 +16,21 @@ export default function TaskList({ tasks, showStageFilter = false }: TaskListPro
         completeTask(taskId);
     };
 
-    const getPriorityColor = (priority: string) => {
-        switch (priority) {
-            case "High":
+    const getPriorityColor = (priority?: string) => {
+        switch (priority?.toLowerCase()) {
+            case "high":
                 return "bg-red-100 text-red-700 border-red-200";
-            case "Medium":
+            case "medium":
                 return "bg-amber-100 text-amber-700 border-amber-200";
-            case "Low":
+            case "low":
                 return "bg-blue-100 text-blue-700 border-blue-200";
             default:
                 return "bg-stone-100 text-stone-700 border-stone-200";
         }
     };
 
-    const getStageColor = (stage: string) => {
-        switch (stage) {
+    const getStageColor = (stage?: string) => {
+        switch (stage?.toUpperCase()) {
             case "DISCOVERY":
                 return "bg-blue-50 text-blue-700 border-blue-200";
             case "SHORTLIST":
@@ -75,9 +75,20 @@ export default function TaskList({ tasks, showStageFilter = false }: TaskListPro
         );
     }
 
+    if (!Array.isArray(tasks)) {
+        return (
+            <div className="bg-white/60 backdrop-blur-sm border border-stone-200/50 rounded-2xl p-8 shadow-lg shadow-stone-200/50">
+                <h2 className="text-xl font-semibold text-stone-900 mb-6">Your Tasks</h2>
+                <div className="bg-stone-50 border border-stone-200 rounded-xl p-6 text-center">
+                    <p className="text-stone-600">Unable to load tasks right now</p>
+                </div>
+            </div>
+        );
+    }
+
     // Separate completed and pending tasks
-    const pendingTasks = tasks.filter((t) => !t.completed);
-    const completedTasks = tasks.filter((t) => t.completed);
+    const pendingTasks = tasks.filter((t) => !t?.completed);
+    const completedTasks = tasks.filter((t) => t?.completed);
 
     return (
         <motion.div
@@ -100,32 +111,32 @@ export default function TaskList({ tasks, showStageFilter = false }: TaskListPro
                 {/* Pending Tasks */}
                 {pendingTasks.map((task, idx) => (
                     <motion.div
-                        key={task.id}
+                        key={task?.id || idx}
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.3, delay: idx * 0.05 }}
                         className="flex items-start gap-3 p-4 bg-stone-50 rounded-lg hover:bg-stone-100 transition-colors duration-200"
                     >
                         <button
-                            onClick={() => handleToggleComplete(task.id)}
+                            onClick={() => task?.id && handleToggleComplete(task.id)}
                             className="w-5 h-5 rounded border-2 border-stone-300 flex items-center justify-center flex-shrink-0 mt-0.5 hover:border-emerald-500 transition-colors duration-200"
                         >
-                            {task.completed && <span className="text-emerald-600 text-sm">✓</span>}
+                            {task?.completed && <span className="text-emerald-600 text-sm">✓</span>}
                         </button>
                         <div className="flex-1 min-w-0">
-                            <div className="text-sm font-medium text-stone-900">{task.task}</div>
-                            {task.description && (
+                            <div className="text-sm font-medium text-stone-900">{task?.task ?? "Untitled Task"}</div>
+                            {task?.description && (
                                 <div className="text-xs text-stone-600 mt-1">{task.description}</div>
                             )}
                             <div className="flex gap-2 mt-2">
                                 <span
                                     className={`px-2 py-0.5 rounded text-xs font-semibold border ${getPriorityColor(
-                                        task.priority
+                                        task?.priority
                                     )}`}
                                 >
-                                    {task.priority}
+                                    {task?.priority ?? "Normal"}
                                 </span>
-                                {showStageFilter && (
+                                {showStageFilter && task?.stage && (
                                     <span
                                         className={`px-2 py-0.5 rounded text-xs font-semibold border ${getStageColor(
                                             task.stage

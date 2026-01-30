@@ -48,7 +48,7 @@ export default function UniversityCard({ university, index, showActions = true, 
             <div className="flex justify-between items-start mb-4">
                 <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                        <h3 className="text-xl font-semibold text-stone-900">{university.name}</h3>
+                        <h3 className="text-xl font-semibold text-stone-900">{university?.name ?? "Unknown University"}</h3>
                         {isLocked && (
                             <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-purple-100 border border-purple-200 text-purple-900">
                                 🔒 Locked
@@ -60,11 +60,11 @@ export default function UniversityCard({ university, index, showActions = true, 
                             </span>
                         )}
                     </div>
-                    <p className="text-sm text-stone-600">{university.country}</p>
+                    <p className="text-sm text-stone-600">{university?.country ?? "Unknown"}</p>
                 </div>
 
                 {/* Category/Competitiveness Badge */}
-                {university.competitiveness && (
+                {university?.competitiveness && (
                     <span
                         className={`px-3 py-1 rounded-full text-xs font-semibold ${university.competitiveness === "High"
                             ? "bg-violet-100 border border-violet-200 text-violet-900"
@@ -82,23 +82,23 @@ export default function UniversityCard({ university, index, showActions = true, 
             <div className="grid grid-cols-2 gap-4 text-sm mb-4">
                 <div>
                     <span className="text-stone-500 font-medium">Rank:</span>{" "}
-                    <span className="text-stone-900">{university.rank ? `#${university.rank}` : "Unranked"}</span>
+                    <span className="text-stone-900">{university?.rank ? `#${university.rank}` : "Unranked"}</span>
                 </div>
                 <div>
                     <span className="text-stone-500 font-medium">Tuition:</span>{" "}
                     <span className="text-stone-900">
-                        {university.estimated_tuition_usd
+                        {university?.estimated_tuition_usd
                             ? `$${university.estimated_tuition_usd.toLocaleString()}/year`
                             : "N/A"}
                     </span>
                 </div>
-                {university.acceptance_chance !== undefined && (
+                {university?.acceptance_chance !== undefined && (
                     <div>
                         <span className="text-stone-500 font-medium">Acceptance:</span>{" "}
                         <span className="text-stone-900">{university.acceptance_chance}%</span>
                     </div>
                 )}
-                {university.cost_level && (
+                {university?.cost_level && (
                     <div>
                         <span className="text-stone-500 font-medium">Cost Level:</span>{" "}
                         <span className="text-stone-900">{university.cost_level}</span>
@@ -107,7 +107,7 @@ export default function UniversityCard({ university, index, showActions = true, 
             </div>
 
             {/* Why it fits */}
-            {university.why_it_fits && (
+            {university?.why_it_fits && (
                 <div className="mb-4">
                     <div className="text-xs font-semibold text-stone-700 mb-1">Why it fits:</div>
                     <p className="text-sm text-stone-600 leading-relaxed">{university.why_it_fits}</p>
@@ -115,7 +115,7 @@ export default function UniversityCard({ university, index, showActions = true, 
             )}
 
             {/* Risks */}
-            {university.risks && (
+            {university?.risks && (
                 <div className="mb-4">
                     <div className="text-xs font-semibold text-stone-700 mb-1">Risks:</div>
                     <p className="text-sm text-stone-600 leading-relaxed italic">{university.risks}</p>

@@ -11,6 +11,7 @@ import LockUniversityModal from "@/components/LockUniversityModal";
 import ProfileStrengthCard from "@/components/ProfileStrengthCard";
 import TaskList from "@/components/TaskList";
 import StageIndicator from "@/components/StageIndicator";
+import ErrorBoundary from "@/components/ErrorBoundary";
 import type { University } from "@/lib/types";
 
 export default function DashboardPage() {
@@ -48,15 +49,11 @@ export default function DashboardPage() {
             try {
                 console.log("Dashboard: Fetching university recommendations...");
                 const response = await getRecommendations(userProfile.email);
-                console.log("Dashboard: Universities received:", response);
+                console.log("Dashboard: Recommendations received:", response);
 
-                if (response.matches) {
-                    const allMatches = [
-                        ...(response.matches.dream || []),
-                        ...(response.matches.target || []),
-                        ...(response.matches.safe || [])
-                    ];
-                    setRecommendations(allMatches);
+                // CRITICAL GUARD: Ensure response has recommendations array
+                if (response && Array.isArray(response.recommendations)) {
+                    setRecommendations(response.recommendations);
                 } else {
                     setRecommendations([]);
                 }
@@ -176,8 +173,12 @@ export default function DashboardPage() {
 
                         {/* Profile Strength & Tasks Grid */}
                         <div className="grid md:grid-cols-2 gap-6 mb-8">
-                            <ProfileStrengthCard email={userProfile.email} />
-                            <TaskList tasks={todoList} showStageFilter={false} />
+                            <ErrorBoundary componentName="Profile Strength">
+                                <ProfileStrengthCard email={userProfile.email} />
+                            </ErrorBoundary>
+                            <ErrorBoundary componentName="Task List">
+                                <TaskList tasks={todoList ?? []} showStageFilter={false} />
+                            </ErrorBoundary>
                         </div>
 
                         {/* University Matches Section */}
@@ -217,16 +218,17 @@ export default function DashboardPage() {
                             )}
 
                             {/* Universities List - Top 5 */}
-                            {!isLoading && !error && recommendations.length > 0 && (
+                            {!isLoading && !error && Array.isArray(recommendations) && recommendations.length > 0 && (
                                 <div className="space-y-4">
                                     {recommendations.slice(0, 5).map((uni: any, idx: number) => (
-                                        <UniversityCard
-                                            key={uni.id || idx}
-                                            university={uni}
-                                            index={idx}
-                                            showActions={true}
-                                            onLockClick={handleLockClick}
-                                        />
+                                        <ErrorBoundary key={uni?.id || idx} componentName="University Card">
+                                            <UniversityCard
+                                                university={uni}
+                                                index={idx}
+                                                showActions={true}
+                                                onLockClick={handleLockClick}
+                                            />
+                                        </ErrorBoundary>
                                     ))}
                                 </div>
                             )}

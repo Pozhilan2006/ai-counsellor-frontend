@@ -87,11 +87,11 @@ export default function Home() {
       <Navbar />
 
       {/* HERO SECTION - Marqo Style (Gradient + Info Hierarchy) */}
-      <section className="pt-32 pb-24 md:pt-48 md:pb-32 bg-gradient-to-br from-slate-900 via-emerald-950 to-teal-900 text-white relative overflow-hidden">
-        {/* Background Shapes with Ambient Motion */}
-        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-emerald-500/10 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2 pointer-events-none animate-float-slow mix-blend-screen"></div>
-        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-teal-500/10 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/3 pointer-events-none animate-float-medium mix-blend-screen"></div>
-        <div className="absolute top-1/2 left-1/2 w-[400px] h-[400px] bg-blue-500/10 rounded-full blur-[80px] -translate-x-1/2 -translate-y-1/2 pointer-events-none animate-float-fast mix-blend-overlay"></div>
+      <section className="pt-32 pb-32 md:pt-48 md:pb-48 bg-gradient-to-br from-slate-900 via-emerald-950 to-teal-900 text-white relative overflow-hidden mask-gradient-bottom">
+        {/* Background Shapes with Ambient Motion - Lower Opacity & Slower */}
+        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-emerald-500/10 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2 pointer-events-none animate-float-slow mix-blend-screen opacity-70"></div>
+        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-teal-500/10 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/3 pointer-events-none animate-float-medium mix-blend-screen opacity-60"></div>
+        <div className="absolute top-1/2 left-1/2 w-[400px] h-[400px] bg-blue-500/10 rounded-full blur-[80px] -translate-x-1/2 -translate-y-1/2 pointer-events-none animate-float-fast mix-blend-overlay opacity-50"></div>
 
         <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center relative z-10">
           <motion.div
@@ -101,7 +101,10 @@ export default function Home() {
             className="text-center lg:text-left"
           >
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-emerald-300 text-sm font-medium mb-8 backdrop-blur-md">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              </span>
               Admissions AI v2.0 Live
             </div>
             <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6 leading-[1.1] text-transparent bg-clip-text bg-gradient-to-r from-white via-white to-emerald-200">
@@ -129,18 +132,18 @@ export default function Home() {
           >
             {/* Main Card - Profile Strength */}
             <motion.div
-              animate={{ y: [0, -10, 0] }}
-              transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute top-10 left-10 md:left-20 bg-white/95 backdrop-blur shadow-2xl rounded-2xl p-2 w-[340px] z-20 border border-white/10 transform -rotate-3 hover:rotate-0 transition-transform duration-500"
+              animate={{ y: [0, -15, 0] }}
+              transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+              className="absolute top-10 left-10 md:left-20 bg-white/95 backdrop-blur shadow-2xl rounded-2xl p-2 w-[340px] z-20 border border-white/10 transform -rotate-2 hover:rotate-0 transition-transform duration-500"
             >
               <ProfileStrengthView data={DUMMY_PROFILE_STRENGTH} isLoading={false} error={null} />
             </motion.div>
 
             {/* Secondary Card - Top Match */}
             <motion.div
-              animate={{ y: [0, 10, 0] }}
-              transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-              className="absolute bottom-20 right-10 md:right-20 bg-white/95 backdrop-blur shadow-2xl rounded-2xl w-[320px] z-10 p-2 transform rotate-3 hover:rotate-0 transition-transform duration-500"
+              animate={{ y: [0, 12, 0] }}
+              transition={{ duration: 9, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
+              className="absolute bottom-20 right-10 md:right-20 bg-white/95 backdrop-blur shadow-2xl rounded-2xl w-[320px] z-10 p-2 transform rotate-2 hover:rotate-0 transition-transform duration-500"
             >
               <div className="p-4">
                 <div className="flex justify-between items-start mb-4">
@@ -159,6 +162,17 @@ export default function Home() {
                 </div>
               </div>
             </motion.div>
+
+            {/* Third Floating Element - AI Analysis Tag */}
+            <motion.div
+              animate={{ x: [0, 10, 0], y: [0, -5, 0] }}
+              transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 3 }}
+              className="absolute top-1/2 right-0 bg-white/90 backdrop-blur-md shadow-xl rounded-full px-4 py-2 z-30 flex items-center gap-2 border border-white/20"
+            >
+              <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+              <span className="text-xs font-bold text-slate-700">AI Analysis Active</span>
+            </motion.div>
+
           </motion.div>
         </div>
       </section>

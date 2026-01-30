@@ -89,16 +89,25 @@
     background-size: 40px 40px;
   }
 
-  /* Ambient Motion Animations */
+  /* Gradient Mask for Smooth Section Transitions */
+  .mask-gradient-bottom {
+    mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+  }
+
+  /* Optimized Ambient Motion Animations */
   .animate-float-slow {
-    animation: float 20s ease-in-out infinite alternate;
+    animation: float 25s ease-in-out infinite alternate;
+    will-change: transform;
   }
 
   .animate-float-medium {
-    animation: float 15s ease-in-out infinite alternate-reverse;
+    animation: float 18s ease-in-out infinite alternate-reverse;
+    will-change: transform;
   }
 
   .animate-float-fast {
-    animation: float 10s ease-in-out infinite alternate;
+    animation: float 12s ease-in-out infinite alternate;
+    will-change: transform;
   }
 }

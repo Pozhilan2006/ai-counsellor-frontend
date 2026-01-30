@@ -88,4 +88,17 @@
       linear-gradient(to bottom, #f1f5f9 1px, transparent 1px);
     background-size: 40px 40px;
   }
+
+  /* Ambient Motion Animations */
+  .animate-float-slow {
+    animation: float 20s ease-in-out infinite alternate;
+  }
+
+  .animate-float-medium {
+    animation: float 15s ease-in-out infinite alternate-reverse;
+  }
+
+  .animate-float-fast {
+    animation: float 10s ease-in-out infinite alternate;
+  }
 }

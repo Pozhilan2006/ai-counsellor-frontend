@@ -84,214 +84,222 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-white font-sans text-slate-900 selection:bg-emerald-100 selection:text-emerald-900 overflow-x-hidden">
 
-      {/* Navbar */}
-      <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-slate-100">
-        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <div className="flex items-center gap-2 font-bold text-xl tracking-tight text-slate-900">
-            <div className="w-8 h-8 bg-gradient-to-br from-emerald-600 to-teal-500 rounded-lg flex items-center justify-center text-white shadow-lg shadow-emerald-500/20">AI</div>
-            Counsellor
-          </div>
-          <div className="flex items-center gap-4">
-            <Link href="/login" className="text-sm font-medium text-slate-600 hover:text-slate-900">Log in</Link>
-            <Link href="/onboarding" className="px-5 py-2.5 bg-slate-900 text-white text-sm font-medium rounded-full hover:bg-slate-800 transition-all shadow-lg hover:shadow-xl">Get Started</Link>
-          </div>
-        </div>
-      </nav>
+      import Navbar from "@/components/Navbar";
 
-      {/* HERO SECTION - Marqo Style (Gradient + Info Hierarchy) */}
-      <section className="pt-32 pb-24 md:pt-48 md:pb-32 bg-gradient-to-br from-slate-900 via-emerald-950 to-teal-900 text-white relative overflow-hidden">
-        {/* Background Shapes */}
-        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-emerald-500/10 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
-        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-teal-500/10 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/3 pointer-events-none"></div>
+      // ... (rest of imports)
 
-        <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-center lg:text-left"
-          >
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-emerald-300 text-sm font-medium mb-8 backdrop-blur-md">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              Admissions AI v2.0 Live
-            </div>
-            <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6 leading-[1.1] text-transparent bg-clip-text bg-gradient-to-r from-white via-white to-emerald-200">
-              Your AI Study Abroad Counsellor
-            </h1>
-            <p className="text-lg md:text-xl text-slate-300 mb-10 leading-relaxed max-w-2xl mx-auto lg:mx-0">
-              Plan, compare, and apply to universities with confidence — powered by intelligent matching algorithms and real-time profile analysis.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              <Link href="/onboarding" className="px-8 py-4 bg-emerald-500 text-white font-semibold rounded-full hover:bg-emerald-400 transition-all shadow-[0_0_40px_-10px_rgba(16,185,129,0.5)]">
-                Get Started
-              </Link>
-              <Link href="#how-it-works" className="px-8 py-4 bg-white/10 text-white font-semibold rounded-full hover:bg-white/20 backdrop-blur-md transition-all border border-white/10">
-                How It Works
-              </Link>
-            </div>
-          </motion.div>
+      // ... (dummy data)
 
-          {/* Dashboard Preview / Floating Cards */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1, delay: 0.2 }}
-            className="relative lg:h-[600px] flex items-center justify-center"
-          >
-            {/* Main Card - Profile Strength */}
-            <div className="absolute top-10 left-10 md:left-20 bg-white/95 backdrop-blur shadow-2xl rounded-2xl p-2 w-[340px] z-20 border border-white/10 transform -rotate-3 hover:rotate-0 transition-transform duration-500">
-              <ProfileStrengthView data={DUMMY_PROFILE_STRENGTH} isLoading={false} error={null} />
-            </div>
+      export default function Home() {
+  return (
+      <div className="min-h-screen bg-white font-sans text-slate-900 selection:bg-emerald-100 selection:text-emerald-900 overflow-x-hidden">
 
-            {/* Secondary Card - Top Match */}
-            <div className="absolute bottom-20 right-10 md:right-20 bg-white/95 backdrop-blur shadow-2xl rounded-2xl w-[320px] z-10 p-2 transform rotate-3 hover:rotate-0 transition-transform duration-500">
-              <div className="p-4">
-                <div className="flex justify-between items-start mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center text-lg font-bold text-slate-500">O</div>
-                    <div>
-                      <div className="font-bold text-slate-800">Oxford</div>
-                      <div className="text-xs text-slate-500">UK</div>
-                    </div>
-                  </div>
-                  <span className="bg-emerald-100 text-emerald-700 px-2 py-1 rounded text-xs font-bold">98% Match</span>
-                </div>
-                <div className="flex gap-2">
-                  <span className="bg-purple-50 text-purple-700 px-2 py-1 rounded text-xs font-bold border border-purple-100">Dream</span>
-                  <span className="bg-slate-50 text-slate-600 px-2 py-1 rounded text-xs font-medium border border-slate-100">High Comp</span>
-                </div>
+        {/* Smart Sticky Navbar */}
+        <Navbar />
+
+        {/* HERO SECTION - Marqo Style (Gradient + Info Hierarchy) */}
+        <section className="pt-32 pb-24 md:pt-48 md:pb-32 bg-gradient-to-br from-slate-900 via-emerald-950 to-teal-900 text-white relative overflow-hidden">
+          {/* Background Shapes with Ambient Motion */}
+          <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-emerald-500/10 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2 pointer-events-none animate-float-slow mix-blend-screen"></div>
+          <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-teal-500/10 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/3 pointer-events-none animate-float-medium mix-blend-screen"></div>
+          <div className="absolute top-1/2 left-1/2 w-[400px] h-[400px] bg-blue-500/10 rounded-full blur-[80px] -translate-x-1/2 -translate-y-1/2 pointer-events-none animate-float-fast mix-blend-overlay"></div>
+
+          <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center relative z-10">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+              className="text-center lg:text-left"
+            >
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-emerald-300 text-sm font-medium mb-8 backdrop-blur-md">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                Admissions AI v2.0 Live
               </div>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* DASHBOARD PREVIEW SECTION */}
-      <section className="py-24 bg-slate-50">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-5xl font-bold text-slate-900 mb-4">Your Control Room</h2>
-            <p className="text-lg text-slate-600 max-w-2xl mx-auto">Get a realistic preview of your AI-powered dashboard. Track everything from profile readiness to application tasks.</p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {/* Profile Strength Card (Reused) */}
-            <div className="md:col-span-1">
-              <ProfileStrengthView data={DUMMY_PROFILE_STRENGTH} isLoading={false} error={null} />
-            </div>
-
-            {/* Quick Stats Grid */}
-            <div className="md:col-span-2 grid grid-cols-2 gap-6">
-              <div className="card-glass p-6 flex flex-col justify-between">
-                <span className="text-slate-500 font-medium">Target Countries</span>
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {["🇺🇸 USA", "🇬🇧 UK", "🇨🇦 Canada"].map(c => (
-                    <span key={c} className="px-3 py-1 bg-slate-100 rounded-full text-slate-700 font-medium">{c}</span>
-                  ))}
-                </div>
-              </div>
-              <div className="card-glass p-6 flex flex-col justify-between">
-                <span className="text-slate-500 font-medium">Estimated Budget</span>
-                <div className="mt-4 text-3xl font-bold text-slate-900">$30,000<span className="text-sm font-normal text-slate-400">/yr</span></div>
-              </div>
-              <div className="col-span-2 card-glass p-6">
-                <h3 className="font-bold text-slate-900 mb-4">Next Steps</h3>
-                <div className="flex items-center gap-4">
-                  <div className="flex-1 h-3 bg-slate-100 rounded-full overflow-hidden">
-                    <div className="h-full w-2/3 bg-emerald-500 rounded-full"></div>
-                  </div>
-                  <span className="text-sm font-bold text-slate-600">65% Complete</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* SMART UNIVERSITY MATCHING */}
-      <section className="py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
-            <div className="max-w-2xl">
-              <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Smart University Matching</h2>
-              <p className="text-lg text-slate-600">
-                We categorize universities into <span className="text-purple-600 font-bold">Dream</span>, <span className="text-emerald-600 font-bold">Target</span>, and <span className="text-blue-600 font-bold">Safe</span> buckets based on your profile strength.
+              <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6 leading-[1.1] text-transparent bg-clip-text bg-gradient-to-r from-white via-white to-emerald-200">
+                Your AI Study Abroad Counsellor
+              </h1>
+              <p className="text-lg md:text-xl text-slate-300 mb-10 leading-relaxed max-w-2xl mx-auto lg:mx-0">
+                Plan, compare, and apply to universities with confidence — powered by intelligent matching algorithms and real-time profile analysis.
               </p>
-            </div>
-            <Link href="/onboarding" className="btn-secondary whitespace-nowrap">Explore All Matches</Link>
-          </div>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                <Link href="/onboarding" className="px-8 py-4 bg-emerald-500 text-white font-semibold rounded-full hover:bg-emerald-400 transition-all shadow-[0_0_40px_-10px_rgba(16,185,129,0.5)] hover:-translate-y-1">
+                  Get Started
+                </Link>
+                <Link href="#how-it-works" className="px-8 py-4 bg-white/10 text-white font-semibold rounded-full hover:bg-white/20 backdrop-blur-md transition-all border border-white/10 hover:-translate-y-1">
+                  How It Works
+                </Link>
+              </div>
+            </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            {DUMMY_UNIVERSITIES.map((uni, i) => (
-              <div key={uni.id} className="relative">
-                {/* Custom category badge above card */}
-                <div className="absolute -top-3 left-6 z-10">
-                  <span className={`px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full shadow-sm text-white ${uni.category === "Dream" ? "bg-purple-600" :
+            {/* Dashboard Preview / Floating Cards */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
+              className="relative lg:h-[600px] flex items-center justify-center"
+            >
+              {/* Main Card - Profile Strength */}
+              <motion.div
+                animate={{ y: [0, -10, 0] }}
+                transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+                className="absolute top-10 left-10 md:left-20 bg-white/95 backdrop-blur shadow-2xl rounded-2xl p-2 w-[340px] z-20 border border-white/10 transform -rotate-3 hover:rotate-0 transition-transform duration-500"
+              >
+                <ProfileStrengthView data={DUMMY_PROFILE_STRENGTH} isLoading={false} error={null} />
+              </motion.div>
+
+              {/* Secondary Card - Top Match */}
+              <motion.div
+                animate={{ y: [0, 10, 0] }}
+                transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+                className="absolute bottom-20 right-10 md:right-20 bg-white/95 backdrop-blur shadow-2xl rounded-2xl w-[320px] z-10 p-2 transform rotate-3 hover:rotate-0 transition-transform duration-500"
+              >
+                <div className="p-4">
+                  <div className="flex justify-between items-start mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center text-lg font-bold text-slate-500">O</div>
+                      <div>
+                        <div className="font-bold text-slate-800">Oxford</div>
+                        <div className="text-xs text-slate-500">UK</div>
+                      </div>
+                    </div>
+                    <span className="bg-emerald-100 text-emerald-700 px-2 py-1 rounded text-xs font-bold">98% Match</span>
+                  </div>
+                  <div className="flex gap-2">
+                    <span className="bg-purple-50 text-purple-700 px-2 py-1 rounded text-xs font-bold border border-purple-100">Dream</span>
+                    <span className="bg-slate-50 text-slate-600 px-2 py-1 rounded text-xs font-medium border border-slate-100">High Comp</span>
+                  </div>
+                </div>
+              </motion.div>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* DASHBOARD PREVIEW SECTION */}
+        <section className="py-24 bg-slate-50">
+          <div className="max-w-7xl mx-auto px-6">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-5xl font-bold text-slate-900 mb-4">Your Control Room</h2>
+              <p className="text-lg text-slate-600 max-w-2xl mx-auto">Get a realistic preview of your AI-powered dashboard. Track everything from profile readiness to application tasks.</p>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-8">
+              {/* Profile Strength Card (Reused) */}
+              <div className="md:col-span-1">
+                <ProfileStrengthView data={DUMMY_PROFILE_STRENGTH} isLoading={false} error={null} />
+              </div>
+
+              {/* Quick Stats Grid */}
+              <div className="md:col-span-2 grid grid-cols-2 gap-6">
+                <div className="card-glass p-6 flex flex-col justify-between">
+                  <span className="text-slate-500 font-medium">Target Countries</span>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {["🇺🇸 USA", "🇬🇧 UK", "🇨🇦 Canada"].map(c => (
+                      <span key={c} className="px-3 py-1 bg-slate-100 rounded-full text-slate-700 font-medium">{c}</span>
+                    ))}
+                  </div>
+                </div>
+                <div className="card-glass p-6 flex flex-col justify-between">
+                  <span className="text-slate-500 font-medium">Estimated Budget</span>
+                  <div className="mt-4 text-3xl font-bold text-slate-900">$30,000<span className="text-sm font-normal text-slate-400">/yr</span></div>
+                </div>
+                <div className="col-span-2 card-glass p-6">
+                  <h3 className="font-bold text-slate-900 mb-4">Next Steps</h3>
+                  <div className="flex items-center gap-4">
+                    <div className="flex-1 h-3 bg-slate-100 rounded-full overflow-hidden">
+                      <div className="h-full w-2/3 bg-emerald-500 rounded-full"></div>
+                    </div>
+                    <span className="text-sm font-bold text-slate-600">65% Complete</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* SMART UNIVERSITY MATCHING */}
+        <section className="py-24 bg-white">
+          <div className="max-w-7xl mx-auto px-6">
+            <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
+              <div className="max-w-2xl">
+                <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Smart University Matching</h2>
+                <p className="text-lg text-slate-600">
+                  We categorize universities into <span className="text-purple-600 font-bold">Dream</span>, <span className="text-emerald-600 font-bold">Target</span>, and <span className="text-blue-600 font-bold">Safe</span> buckets based on your profile strength.
+                </p>
+              </div>
+              <Link href="/onboarding" className="btn-secondary whitespace-nowrap">Explore All Matches</Link>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-8">
+              {DUMMY_UNIVERSITIES.map((uni, i) => (
+                <div key={uni.id} className="relative">
+                  {/* Custom category badge above card */}
+                  <div className="absolute -top-3 left-6 z-10">
+                    <span className={`px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full shadow-sm text-white ${uni.category === "Dream" ? "bg-purple-600" :
                       uni.category === "Target" ? "bg-emerald-600" :
                         "bg-blue-600"
-                    }`}>
-                    {uni.category}
-                  </span>
-                </div>
-                <UniversityCard university={uni} index={i} showActions={false} />
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* AI TASKS SECTION */}
-      <section className="py-24 bg-slate-50 border-t border-slate-200">
-        <div className="max-w-3xl mx-auto px-6">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-slate-900 mb-2">What You Should Do Next</h2>
-            <p className="text-slate-600">Your personalized AI checklist to stay on track.</p>
-          </div>
-
-          {/* Mocking TaskList container style manually for Landing Page specific look without context */}
-          <div className="bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden">
-            <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
-              <h3 className="font-bold text-slate-800">Action Items</h3>
-              <span className="text-xs font-bold bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full">1 Pending</span>
-            </div>
-            <div className="divide-y divide-slate-50">
-              {DUMMY_TASKS.map((task) => (
-                <div key={task.id} className="p-4 flex items-start gap-4 hover:bg-slate-50 transition-colors">
-                  <div className={`mt-1 w-5 h-5 rounded border flex items-center justify-center ${task.completed ? "bg-emerald-500 border-emerald-500" : "border-slate-300"
-                    }`}>
-                    {task.completed && <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>}
+                      }`}>
+                      {uni.category}
+                    </span>
                   </div>
-                  <div className="flex-1">
-                    <p className={`font-medium ${task.completed ? "text-slate-400 line-through" : "text-slate-800"}`}>{task.task}</p>
-                    <p className="text-xs text-slate-500 mt-0.5">{task.reason}</p>
-                  </div>
-                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded border ${task.priority === "High" ? "bg-red-50 text-red-600 border-red-100" :
-                      "bg-amber-50 text-amber-600 border-amber-100"
-                    }`}>
-                    {task.priority}
-                  </span>
+                  <UniversityCard university={uni} index={i} showActions={false} />
                 </div>
               ))}
             </div>
-            <div className="p-4 bg-slate-50/50 text-center">
-              <Link href="/login" className="text-sm font-semibold text-emerald-600 hover:text-emerald-700">View all tasks →</Link>
+          </div>
+        </section>
+
+        {/* AI TASKS SECTION */}
+        <section className="py-24 bg-slate-50 border-t border-slate-200">
+          <div className="max-w-3xl mx-auto px-6">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold text-slate-900 mb-2">What You Should Do Next</h2>
+              <p className="text-slate-600">Your personalized AI checklist to stay on track.</p>
+            </div>
+
+            {/* Mocking TaskList container style manually for Landing Page specific look without context */}
+            <div className="bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden">
+              <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                <h3 className="font-bold text-slate-800">Action Items</h3>
+                <span className="text-xs font-bold bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full">1 Pending</span>
+              </div>
+              <div className="divide-y divide-slate-50">
+                {DUMMY_TASKS.map((task) => (
+                  <div key={task.id} className="p-4 flex items-start gap-4 hover:bg-slate-50 transition-colors">
+                    <div className={`mt-1 w-5 h-5 rounded border flex items-center justify-center ${task.completed ? "bg-emerald-500 border-emerald-500" : "border-slate-300"
+                      }`}>
+                      {task.completed && <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>}
+                    </div>
+                    <div className="flex-1">
+                      <p className={`font-medium ${task.completed ? "text-slate-400 line-through" : "text-slate-800"}`}>{task.task}</p>
+                      <p className="text-xs text-slate-500 mt-0.5">{task.reason}</p>
+                    </div>
+                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded border ${task.priority === "High" ? "bg-red-50 text-red-600 border-red-100" :
+                      "bg-amber-50 text-amber-600 border-amber-100"
+                      }`}>
+                      {task.priority}
+                    </span>
+                  </div>
+                ))}
+              </div>
+              <div className="p-4 bg-slate-50/50 text-center">
+                <Link href="/login" className="text-sm font-semibold text-emerald-600 hover:text-emerald-700">View all tasks →</Link>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Footer */}
-      <footer className="py-12 bg-slate-900 text-slate-400">
-        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center">
-          <div className="font-bold text-white text-lg mb-4 md:mb-0">AI Counsellor</div>
-          <div className="flex gap-8 text-sm">
-            <Link href="#" className="hover:text-white transition-colors">Privacy</Link>
-            <Link href="#" className="hover:text-white transition-colors">Terms</Link>
-            <Link href="#" className="hover:text-white transition-colors">Contact</Link>
+        {/* Footer */}
+        <footer className="py-12 bg-slate-900 text-slate-400">
+          <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center">
+            <div className="font-bold text-white text-lg mb-4 md:mb-0">AI Counsellor</div>
+            <div className="flex gap-8 text-sm">
+              <Link href="#" className="hover:text-white transition-colors">Privacy</Link>
+              <Link href="#" className="hover:text-white transition-colors">Terms</Link>
+              <Link href="#" className="hover:text-white transition-colors">Contact</Link>
+            </div>
           </div>
-        </div>
-      </footer>
+        </footer>
 
-    </div>
-  );
+      </div>
+      );
 }

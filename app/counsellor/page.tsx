@@ -14,7 +14,7 @@ export default function CounsellorPage() {
     const [question, setQuestion] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [aiResponse, setAiResponse] = useState<any>(null);
+    const [conversationHistory, setConversationHistory] = useState<Array<{ role: "user" | "assistant"; message: string; response?: any }>>([]);
 
     useEffect(() => {
         if (!userProfile) {
@@ -30,26 +30,39 @@ export default function CounsellorPage() {
         e.preventDefault();
         if (!question.trim()) return;
 
+        const userMessage = question.trim();
         setIsLoading(true);
         setError(null);
 
+        // Add user message to history immediately
+        setConversationHistory(prev => [...prev, { role: "user", message: userMessage }]);
+        setQuestion("");
+
         try {
-            console.log("Counsellor: Sending message", { email: userProfile.email, message: question });
-            const response = await callCounsellor(userProfile.email, question);
+            console.log("Counsellor: Sending message", { email: userProfile.email, message: userMessage });
+            const response = await callCounsellor(userProfile.email, userMessage);
             console.log("Counsellor: Response received:", response);
-            setAiResponse(response);
+
+            // Add AI response to history
+            setConversationHistory(prev => [...prev, {
+                role: "assistant",
+                message: response.message || "Response received",
+                response: response
+            }]);
 
             // Update global recommendations if new ones are returned
             if (response.recommendations && response.recommendations.length > 0) {
                 setRecommendations(response.recommendations);
             }
 
-            setQuestion("");
         } catch (err) {
             // Display backend error message verbatim
             const errorMessage = err instanceof Error ? err.message : "Something went wrong. Try again.";
             console.error("Counsellor error:", errorMessage);
             setError(errorMessage);
+
+            // Remove the user message from history on error
+            setConversationHistory(prev => prev.slice(0, -1));
         } finally {
             setIsLoading(false);
         }
@@ -141,117 +154,91 @@ export default function CounsellorPage() {
                             </motion.div>
                         )}
 
-                        {/* Response Section */}
-                        {aiResponse && (
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                                className="space-y-8"
-                            >
-                                {/* AI Message */}
-                                {aiResponse?.message && (
-                                    <div className="bg-white/60 backdrop-blur-sm border border-stone-200/50 rounded-2xl p-8 shadow-lg shadow-stone-200/50">
-                                        <div className="flex items-start gap-4 mb-4">
-                                            <div className="w-10 h-10 rounded-full bg-stone-900 flex items-center justify-center flex-shrink-0">
-                                                <span className="text-white text-sm font-semibold">AI</span>
+                        {/* Conversation History */}
+                        {conversationHistory.length > 0 && (
+                            <div className="space-y-6">
+                                {conversationHistory.map((entry, idx) => (
+                                    <motion.div
+                                        key={idx}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ duration: 0.4, delay: idx * 0.05 }}
+                                        className={`${entry.role === "user"
+                                                ? "bg-stone-100/60 border-stone-200/50"
+                                                : "bg-white/60 border-stone-200/50"
+                                            } backdrop-blur-sm border rounded-2xl p-6 shadow-lg shadow-stone-200/50`}
+                                    >
+                                        <div className="flex items-start gap-4">
+                                            <div
+                                                className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${entry.role === "user"
+                                                        ? "bg-stone-600"
+                                                        : "bg-stone-900"
+                                                    }`}
+                                            >
+                                                <span className="text-white text-sm font-semibold">
+                                                    {entry.role === "user" ? "You" : "AI"}
+                                                </span>
                                             </div>
-                                            <div>
-                                                <h3 className="text-lg font-semibold text-stone-900 mb-2">
-                                                    Counsellor Response
+                                            <div className="flex-1">
+                                                <h3 className="text-base font-semibold text-stone-900 mb-2">
+                                                    {entry.role === "user" ? "Your Question" : "Counsellor Response"}
                                                 </h3>
                                                 <p className="text-stone-700 leading-relaxed whitespace-pre-wrap">
-                                                    {aiResponse.message}
+                                                    {entry.message}
                                                 </p>
+
+                                                {/* University Recommendations (only for assistant responses) */}
+                                                {entry.role === "assistant" && entry.response?.recommendations && entry.response.recommendations.length > 0 && (
+                                                    <div className="mt-6">
+                                                        <h4 className="text-lg font-semibold text-stone-900 mb-4">
+                                                            University Recommendations ({entry.response.recommendations.length})
+                                                        </h4>
+                                                        <div className="space-y-3">
+                                                            {entry.response.recommendations.map((uni: any, uniIdx: number) => (
+                                                                <div
+                                                                    key={uni.id || uniIdx}
+                                                                    className="bg-white/80 border border-stone-200/50 rounded-xl p-4 hover:bg-white hover:border-stone-300/50 transition-all duration-300"
+                                                                >
+                                                                    <div className="flex justify-between items-start mb-2">
+                                                                        <div>
+                                                                            <h5 className="text-lg font-semibold text-stone-900">
+                                                                                {uni.name}
+                                                                            </h5>
+                                                                            <p className="text-sm text-stone-600">{uni.country}</p>
+                                                                        </div>
+                                                                        {uni.competitiveness && (
+                                                                            <span
+                                                                                className={`px-3 py-1 rounded-full text-xs font-semibold ${uni.competitiveness === "High"
+                                                                                        ? "bg-violet-100 border border-violet-200 text-violet-900"
+                                                                                        : uni.competitiveness === "Medium"
+                                                                                            ? "bg-blue-100 border border-blue-200 text-blue-900"
+                                                                                            : "bg-emerald-100 border border-emerald-200 text-emerald-900"
+                                                                                    }`}
+                                                                            >
+                                                                                {uni.competitiveness}
+                                                                            </span>
+                                                                        )}
+                                                                    </div>
+                                                                    {uni.why_it_fits && (
+                                                                        <p className="text-sm text-stone-600 mt-2">
+                                                                            <strong>Why it fits:</strong> {uni.why_it_fits}
+                                                                        </p>
+                                                                    )}
+                                                                    {uni.risks && (
+                                                                        <p className="text-sm text-amber-700 mt-2">
+                                                                            <strong>Risks:</strong> {uni.risks}
+                                                                        </p>
+                                                                    )}
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
-                                    </div>
-                                )}
-
-                                {/* University Recommendations */}
-                                {aiResponse?.recommendations && aiResponse.recommendations.length > 0 && (
-                                    <div>
-                                        <h2 className="text-2xl font-semibold text-stone-900 mb-6">
-                                            University Recommendations ({aiResponse.recommendations.length})
-                                        </h2>
-                                        <div className="space-y-4">
-                                            {aiResponse.recommendations.map((uni: any, idx: number) => (
-                                                <motion.div
-                                                    key={uni.id || idx}
-                                                    initial={{ opacity: 0, y: 20 }}
-                                                    animate={{ opacity: 1, y: 0 }}
-                                                    transition={{ duration: 0.4, delay: idx * 0.05 }}
-                                                    className="bg-white/60 backdrop-blur-sm border border-stone-200/50 rounded-xl p-6 hover:bg-white/80 hover:border-stone-300/50 transition-all duration-300 hover:shadow-lg hover:shadow-stone-200/50"
-                                                >
-                                                    <div className="flex justify-between items-start mb-4">
-                                                        <div>
-                                                            <h3 className="text-xl font-semibold text-stone-900 mb-1">
-                                                                {uni.name}
-                                                            </h3>
-                                                            <p className="text-sm text-stone-600">{uni.country}</p>
-                                                        </div>
-                                                        {uni.competitiveness && (
-                                                            <span
-                                                                className={`px-3 py-1 rounded-full text-xs font-semibold ${uni.competitiveness === "High"
-                                                                    ? "bg-violet-100 border border-violet-200 text-violet-900"
-                                                                    : uni.competitiveness === "Medium"
-                                                                        ? "bg-blue-100 border border-blue-200 text-blue-900"
-                                                                        : "bg-emerald-100 border border-emerald-200 text-emerald-900"
-                                                                    }`}
-                                                            >
-                                                                {uni.competitiveness}
-                                                            </span>
-                                                        )}
-                                                    </div>
-                                                    <div className="grid grid-cols-2 gap-4 text-sm">
-                                                        <div>
-                                                            <span className="text-stone-500 font-medium">Rank:</span>{" "}
-                                                            <span className="text-stone-900">
-                                                                {uni.rank ? `#${uni.rank}` : "Unranked"}
-                                                            </span>
-                                                        </div>
-                                                        <div>
-                                                            <span className="text-stone-500 font-medium">Tuition:</span>{" "}
-                                                            <span className="text-stone-900">
-                                                                {uni.estimated_tuition_usd
-                                                                    ? `$${uni.estimated_tuition_usd.toLocaleString()}/year`
-                                                                    : "N/A"}
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                </motion.div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
-
-                                {/* Empty Recommendations State */}
-                                {aiResponse?.recommendations && aiResponse.recommendations.length === 0 && (
-                                    <div className="bg-amber-50 border border-amber-200 rounded-xl p-6">
-                                        <p className="text-amber-900 text-center">
-                                            No universities found. Try adjusting your preferences.
-                                        </p>
-                                    </div>
-                                )}
-                            </motion.div>
-                        )}
-
-                        {/* Empty State */}
-                        {!aiResponse && !isLoading && (
-                            <motion.div
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                transition={{ duration: 0.6, delay: 0.2 }}
-                                className="text-center py-16"
-                            >
-                                <div className="w-16 h-16 rounded-full bg-stone-100 flex items-center justify-center mx-auto mb-4">
-                                    <span className="text-2xl">💬</span>
-                                </div>
-                                <h3 className="text-lg font-semibold text-stone-900 mb-2">No conversation yet</h3>
-                                <p className="text-stone-600">
-                                    Ask a question above to get started with your AI counsellor.
-                                </p>
-                            </motion.div>
+                                    </motion.div>
+                                ))}
+                            </div>
                         )}
                     </motion.div>
                 </div>

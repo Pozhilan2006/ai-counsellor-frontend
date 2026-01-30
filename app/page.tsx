@@ -88,20 +88,114 @@ export default function Home() {
                       <div className="w-3 h-3 rounded-full bg-emerald-400"></div>
                     </div>
                   </div>
-                  <div className="p-8 w-full h-full pt-20 grid grid-cols-3 gap-6">
+                  <div className="p-6 w-full h-full pt-20 grid grid-cols-1 md:grid-cols-3 gap-6 overflow-hidden">
+                    {/* Fake Sidebar/Profile */}
                     <div className="col-span-1 space-y-4">
-                      <div className="h-32 rounded-lg bg-white shadow-sm border border-slate-100"></div>
-                      <div className="h-24 rounded-lg bg-white shadow-sm border border-slate-100"></div>
+                      {/* Profile Card */}
+                      <div className="p-4 rounded-xl bg-white shadow-sm border border-slate-100 flex flex-col gap-3">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full bg-slate-200"></div>
+                          <div className="space-y-1">
+                            <div className="w-20 h-3 bg-slate-200 rounded"></div>
+                            <div className="w-12 h-2 bg-slate-100 rounded"></div>
+                          </div>
+                        </div>
+                        <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                          <div className="h-full w-3/4 bg-emerald-500 rounded-full"></div>
+                        </div>
+                        <div className="flex justify-between text-xs text-slate-400">
+                          <span>Profile Strength</span>
+                          <span className="text-emerald-600 font-bold">75%</span>
+                        </div>
+                      </div>
+
+                      {/* Mini Tasks */}
+                      <div className="p-4 rounded-xl bg-white shadow-sm border border-slate-100 space-y-3">
+                        {[1, 2].map(i => (
+                          <div key={i} className="flex gap-2 items-center">
+                            <div className="w-4 h-4 rounded border border-slate-200"></div>
+                            <div className="w-full h-2 bg-slate-100 rounded"></div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
+
+                    {/* Main Content Areas */}
                     <div className="col-span-2 space-y-4">
-                      <div className="h-16 rounded-lg bg-emerald-50 border border-emerald-100 w-full"></div>
-                      <div className="h-40 rounded-lg bg-white shadow-sm border border-slate-100 w-full"></div>
+                      {/* University Matches */}
+                      <div className="p-4 rounded-xl bg-white shadow-sm border border-slate-100">
+                        <div className="flex justify-between mb-4">
+                          <div className="w-32 h-4 bg-slate-100 rounded"></div>
+                          <div className="w-16 h-4 bg-emerald-100 rounded"></div>
+                        </div>
+                        <div className="space-y-3">
+                          {[1, 2, 3].map(i => (
+                            <div key={i} className="flex items-center justify-between p-2 rounded-lg bg-slate-50 border border-slate-100">
+                              <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 rounded bg-white border border-slate-100"></div>
+                                <div className="w-24 h-3 bg-slate-200 rounded"></div>
+                              </div>
+                              <div className="w-12 h-6 rounded-full bg-emerald-500/10"></div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </motion.div>
           </motion.div>
+        </div>
+      </section>
+
+      {/* How it Works Section */}
+      <section id="how-it-works" className="py-24 bg-white relative">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <h2 className="text-3xl md:text-5xl font-bold text-slate-900 mb-6">Your Path to Admission.</h2>
+            <p className="text-lg text-slate-600">Three simple steps to unlock your dream university.</p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-12 text-center">
+            {[
+              {
+                icon: "👤",
+                title: "1. Build Your Profile",
+                desc: "Enter your academic details, test scores, and preferences. Our AI instantly analyzes your profile strength."
+              },
+              {
+                icon: "🔍",
+                title: "2. Get Matched",
+                desc: "Receive a personalized list of Ambitious, Target, and Safe universities tailored to your chances."
+              },
+              {
+                icon: "🚀",
+                title: "3. Apply with Confidence",
+                desc: "Follow a step-by-step roadmap with AI-generated tasks to craft the perfect application."
+              }
+            ].map((step, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.2 }}
+                className="relative group p-8 rounded-2xl border border-slate-100 bg-slate-50/50 hover:bg-white hover:shadow-xl transition-all duration-300"
+              >
+                <div className="w-16 h-16 rounded-2xl bg-white shadow-lg border border-slate-100 flex items-center justify-center text-3xl mb-6 mx-auto group-hover:scale-110 transition-transform">
+                  {step.icon}
+                </div>
+                <h3 className="text-xl font-bold text-slate-900 mb-4">{step.title}</h3>
+                <p className="text-slate-600 leading-relaxed">{step.desc}</p>
+
+                {/* Connector Line (Desktop) */}
+                {i !== 2 && (
+                  <div className="hidden md:block absolute top-1/2 -right-6 w-12 h-0.5 bg-slate-200 -z-10"></div>
+                )}
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
 
